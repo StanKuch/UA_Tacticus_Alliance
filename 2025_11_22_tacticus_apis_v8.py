@@ -597,51 +597,43 @@ global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 output_file = 'global_toplines.xlsx'
 
-# Write all sheets
-with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
-    global_aggr_toplines.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
-    global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
-    global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
-    global_aggr_raid_log.to_excel(writer, sheet_name='Full_alliance_detaield', index=False)
-    us_aggr_raid_log.to_excel(writer, sheet_name='US_detailed', index=False)
-    bi_aggr_raid_log.to_excel(writer, sheet_name='BI_detailed', index=False)
-    vn_aggr_raid_log.to_excel(writer, sheet_name='VN_detailed', index=False)
-    ky_aggr_raid_log.to_excel(writer, sheet_name='KY_detailed', index=False)
+# List of sheets and DataFrames
+sheets = {
+    'Global_agregated_toplines': global_aggr_toplines,
+    'Global_detailed_toplines': global_detailed_toplines,
+    'Global_boss_df': global_boss_df,
+    'Full_alliance_detaield': global_aggr_raid_log,
+    'US_detailed': us_aggr_raid_log,
+    'BI_detailed': bi_aggr_raid_log,
+    'VN_detailed': vn_aggr_raid_log,
+    'KY_detailed': ky_aggr_raid_log
+}
 
-# Apply gradient coloring
-wb = load_workbook(output_file)
-ws = wb["Global_agregated_toplines"]
-
-gradient_cols = ["total_points", "num_battles"]
-
-# Map header names to column indices
-header = [cell.value for cell in ws[1]]  # ws[1] is the first row
-col_indices = [header.index(col) + 1 for col in gradient_cols]  # openpyxl is 1-based
-
-for col_idx in col_indices:
-    # Get all cells in the column (skip header)
-    col_cells = list(ws.iter_cols(min_col=col_idx, max_col=col_idx, min_row=2, max_row=ws.max_row, values_only=False))[0]
-
-    # Extract numeric values
-    values = [cell.value if isinstance(cell.value, (int, float)) else 0 for cell in col_cells]
-    min_val, max_val = min(values), max(values)
-
-    for cell, val in zip(col_cells, values):
-        ratio = 1 if max_val == min_val else (val - min_val) / (max_val - min_val)
-        red = int(255 * (1 - ratio))
-        green = int(255 * ratio)
-        hex_color = f"{red:02X}{green:02X}00"
-        cell.fill = PatternFill(start_color=hex_color, end_color=hex_color, fill_type="solid")
-
-# Set fixed column widths safely
+# Column width
 fixed_width = 15
-for ws in wb.worksheets:
-    for col_cells in ws.iter_cols(min_col=1, max_col=ws.max_column):
-        col_letter = col_cells[0].column_letter  # first cell in column
-        ws.column_dimensions[col_letter].width = fixed_width
 
-# Save workbook
-wb.save(output_file)
+# Columns to apply gradient (example for first sheet; can be auto-detected)
+gradient_columns = ["total_points", "num_battles"]
+
+with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+    for sheet_name, df in sheets.items():
+        df.to_excel(writer, sheet_name=sheet_name, index=False)
+        worksheet = writer.sheets[sheet_name]
+        workbook = writer.book
+
+        # Set column widths for all columns
+        for i, col in enumerate(df.columns):
+            worksheet.set_column(i, i, fixed_width)
+
+        # Apply conditional formatting for numeric columns in first sheet only
+        if sheet_name == 'Global_agregated_toplines':
+            for col_name in gradient_columns:
+                if col_name in df.columns:
+                    col_idx = df.columns.get_loc(col_name)
+                    worksheet.conditional_format(1, col_idx, len(df), col_idx,
+                                                 {'type': '2_color_scale',
+                                                  'min_color': "#FF0000",
+                                                  'max_color': "#00FF00"})
 
 
 # In[116]:
@@ -664,6 +656,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
