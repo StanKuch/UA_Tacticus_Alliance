@@ -608,17 +608,6 @@ with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     bi_aggr_raid_log.to_excel(writer, sheet_name='BI_detailed', index=False)
     vn_aggr_raid_log.to_excel(writer, sheet_name='VN_detailed', index=False)
     ky_aggr_raid_log.to_excel(writer, sheet_name='KY_detailed', index=False)
-    
-    #set column width
-    fixed_width = 15
-    ws = writer.sheets["Global_agregated_toplines"]
-    for sheet_name, ws in writer.sheets.items():
-        for col in ws.columns:
-            ws.column_dimensions[col[0].column_letter].width = fixed_width
-
-
-# In[78]:
-
 
 # Connect to Dropbox
 dbx = dropbox.Dropbox(ACCESS_TOKEN)
@@ -637,6 +626,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
