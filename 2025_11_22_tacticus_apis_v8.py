@@ -30,9 +30,9 @@ from openpyxl.styles import PatternFill
 
 #environmental variables for secrets use
 
-APP_KEY = os.environ["APP_KEY"]
-APP_SECRET = os.environ["APP_SECRET"]
-REFRESH_TOKEN = os.environ["REFRESH_TOKEN"]
+dropbox_app_key = os.environ["APP_KEY"]
+dropbox_app_secret = os.environ["APP_SECRET"]
+dropbox_refresh_token = os.environ["REFRESH_TOKEN"]
 api_bi = os.environ["api_bi"]
 api_us = os.environ["api_us"]
 api_vn = os.environ["api_vn"]
@@ -60,9 +60,9 @@ with pd.ExcelWriter('global_member_list' + '.xlsx') as writer:
 """
 # Create Dropbox client using refresh token
 dbx = dropbox.Dropbox(
-    oauth2_refresh_token=REFRESH_TOKEN,
-    app_key=APP_KEY,
-    app_secret=APP_SECRET
+    oauth2_refresh_token = dropbox_refresh_token,
+    app_key = dropbox_app_key,
+    app_secret = dropbox_app_secret
 )
 
 metadata, res = dbx.files_download(dropbox_path)
@@ -656,3 +656,4 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
