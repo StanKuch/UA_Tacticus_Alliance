@@ -620,7 +620,7 @@ with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     ky_aggr_raid_log.to_excel(writer, sheet_name='KY_detailed', index=False)
 
 
-fixed_width = 20
+fixed_width = 25
 
 # Load the workbook
 wb = load_workbook(output_file)
@@ -656,5 +656,6 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
