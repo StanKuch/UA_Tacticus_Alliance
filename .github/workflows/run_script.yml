@@ -3,8 +3,9 @@ name: Run Python script twice per day (UK time)
 on:
   schedule:
     # UTC times corresponding to 1 PM and 8 PM UK time (assuming GMT)
-    - cron: "13 0 * * *"   # 13:00 UK → 13:00 UTC in winter
-    - cron: "20 0 * * *"   # 20:00 UK → 20:00 UTC in winter
+    - cron: "4 0 * * *"   # 
+    - cron: "11 0 * * *"   # 
+    - cron: "18 0 * * *"   # 
   workflow_dispatch:        # allow manual run
 
 jobs:
