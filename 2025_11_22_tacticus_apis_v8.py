@@ -594,8 +594,10 @@ global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 # In[115]:
 
-
 output_file = 'global_toplines.xlsx'
+
+# Detect if running in GitHub Actions
+RUN_GRADIENT = os.getenv("CI", "false") != "true"
 
 # List of sheets and DataFrames
 sheets = {
@@ -612,29 +614,30 @@ sheets = {
 # Column width
 fixed_width = 15
 
-# Columns to apply gradient (example for first sheet; can be auto-detected)
-gradient_columns = ["total_points", "num_battles"]
-
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     for sheet_name, df in sheets.items():
         df.to_excel(writer, sheet_name=sheet_name, index=False)
         worksheet = writer.sheets[sheet_name]
         workbook = writer.book
 
-        # Set column widths for all columns
+        # Set fixed column widths for all columns
         for i, col in enumerate(df.columns):
             worksheet.set_column(i, i, fixed_width)
 
-        # Apply conditional formatting for numeric columns in first sheet only
-        if sheet_name == 'Global_agregated_toplines':
-            for col_name in gradient_columns:
-                if col_name in df.columns:
-                    col_idx = df.columns.get_loc(col_name)
-                    worksheet.conditional_format(1, col_idx, len(df), col_idx,
-                                                 {'type': '2_color_scale',
-                                                  'min_color': "#FF0000",
-                                                  'max_color': "#00FF00"})
+        # Apply conditional formatting only if local
+        if RUN_GRADIENT and sheet_name == 'Global_agregated_toplines':
+            # Automatically detect numeric columns
+            numeric_cols = df.select_dtypes(include='number').columns
+            for col_name in numeric_cols:
+                col_idx = df.columns.get_loc(col_name)
+                worksheet.conditional_format(
+                    1, col_idx, len(df), col_idx,
+                    {'type': '2_color_scale',
+                     'min_color': "#FF0000",
+                     'max_color': "#00FF00"}
+                )
 
+print("Excel export complete. Gradient applied locally:", RUN_GRADIENT)
 
 # In[116]:
 
@@ -656,6 +659,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
