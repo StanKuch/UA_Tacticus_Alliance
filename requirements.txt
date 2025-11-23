@@ -4,4 +4,3 @@ numpy
 datetime
 dropbox
 openpyxl
-io
