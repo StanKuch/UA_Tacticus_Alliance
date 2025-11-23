@@ -30,6 +30,8 @@ jobs:
           api_vn: ${{ secrets.api_vn }}
           api_ky: ${{ secrets.api_ky }}
           dropbox_path: ${{ secrets.dropbox_path }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
           
         run: python 2025_11_22_tacticus_apis_v8.py
