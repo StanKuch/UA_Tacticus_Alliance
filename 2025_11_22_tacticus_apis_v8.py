@@ -596,48 +596,32 @@ global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 output_file = 'global_toplines.xlsx'
 
-# Detect if running in GitHub Actions
-RUN_GRADIENT = os.getenv("CI", "false") != "true"
+# Write all sheets
+with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+    global_aggr_toplines.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
+    global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
+    global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
+    global_aggr_raid_log.to_excel(writer, sheet_name='Full_alliance_detaield', index=False)
+    us_aggr_raid_log.to_excel(writer, sheet_name='US_detailed', index=False)
+    bi_aggr_raid_log.to_excel(writer, sheet_name='BI_detailed', index=False)
+    vn_aggr_raid_log.to_excel(writer, sheet_name='VN_detailed', index=False)
+    ky_aggr_raid_log.to_excel(writer, sheet_name='KY_detailed', index=False)
 
-# List of sheets and DataFrames
-sheets = {
-    'Global_agregated_toplines': global_aggr_toplines,
-    'Global_detailed_toplines': global_detailed_toplines,
-    'Global_boss_df': global_boss_df,
-    'Full_alliance_detaield': global_aggr_raid_log,
-    'US_detailed': us_aggr_raid_log,
-    'BI_detailed': bi_aggr_raid_log,
-    'VN_detailed': vn_aggr_raid_log,
-    'KY_detailed': ky_aggr_raid_log
-}
 
-# Column width
 fixed_width = 15
 
-with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
-    for sheet_name, df in sheets.items():
-        df.to_excel(writer, sheet_name=sheet_name, index=False)
-        worksheet = writer.sheets[sheet_name]
-        workbook = writer.book
+# Load the workbook
+wb = load_workbook(output_file)
 
-        # Set fixed column widths for all columns
-        for i, col in enumerate(df.columns):
-            worksheet.set_column(i, i, fixed_width)
+# Loop over all sheets in the workbook
+for sheet in wb.worksheets:
+    # Loop over all columns in the current sheet
+    for col_cells in sheet.iter_cols(min_col=1, max_col=sheet.max_column):
+        col_letter = col_cells[0].column_letter  # get column letter from first cell
+        sheet.column_dimensions[col_letter].width = fixed_width
 
-        # Apply conditional formatting only if local
-        if RUN_GRADIENT and sheet_name == 'Global_agregated_toplines':
-            # Automatically detect numeric columns
-            numeric_cols = df.select_dtypes(include='number').columns
-            for col_name in numeric_cols:
-                col_idx = df.columns.get_loc(col_name)
-                worksheet.conditional_format(
-                    1, col_idx, len(df), col_idx,
-                    {'type': '2_color_scale',
-                     'min_color': "#FF0000",
-                     'max_color': "#00FF00"}
-                )
-
-print("Excel export complete. Gradient applied locally:", RUN_GRADIENT)
+# Save the workbook
+wb.save(output_file)
 
 # In[116]:
 
@@ -659,6 +643,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
