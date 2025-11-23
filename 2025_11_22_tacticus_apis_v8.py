@@ -599,17 +599,8 @@ global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 output_file = 'global_toplines' + '.xlsx'
 
 with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
-    #have colour coding for first tab
-    styler = (
-        global_aggr_toplines.style
-        .background_gradient(
-            subset=["total_points","num_battles"],
-            cmap="RdYlGn"  # Green = high, Red = low
-        )
-    )
 
-    styler.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
-    
+    global_aggr_toplines.to_excel(writer, sheet_name='Global_aggregated_toplines', index=False)
     global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
     global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
     global_aggr_raid_log.to_excel(writer, sheet_name='Full_alliance_detaield', index=False)
@@ -646,6 +637,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
