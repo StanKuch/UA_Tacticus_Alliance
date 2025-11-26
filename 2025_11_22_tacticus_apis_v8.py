@@ -456,13 +456,13 @@ try:
 except Exception:
     print("vn_error")
     
-"""
+
 try:
     ky_members, ky_source_raid_log, ky_aggr_raid_log, ky_boss_df = get_guild_data(api_ky, global_member_list)
     print("ky_done")
 except Exception:
     print("ky_error")
-"""
+
 
 
 # In[9]:
@@ -656,6 +656,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
