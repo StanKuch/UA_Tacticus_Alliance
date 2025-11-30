@@ -13,6 +13,7 @@ from time import gmtime, strftime
 import warnings
 import dropbox
 from dropbox.oauth import DropboxOAuth2FlowNoRedirect
+from dropbox.files import WriteMode
 import openpyxl
 from io import BytesIO
 import os
@@ -89,6 +90,42 @@ data_raid_generic = r_raid.json()
 raid_season = data_raid_generic['season']
 
 url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
+
+
+
+
+#read existing toplines file, to check for the latest season from api vs latest one in the existing file
+
+dropbox_path_existing_toplines = "/global_toplines.xlsx"  # change to your path
+
+metadata_toplines, res_toplines = dbx.files_download(dropbox_path_existing_toplines)
+file_content_toplines = res_toplines.content
+global_existing_toplines = pd.read_excel(BytesIO(file_content_toplines), engine='openpyxl')
+
+
+
+
+#if season from api is new - copy existing file into Archive and overwrite existing file
+
+if raid_season == global_existing_toplines[['raid_season']].max().iloc[0]:
+    print("same_season")
+else:
+    SRC_PATH = "/" +'global_toplines' + '.xlsx'
+    DEST_PATH = "/" + "Archive/" + 'global_toplines_' + str(global_existing_toplines[['raid_season']].max().iloc[0]) + '.xlsx'
+
+    # Download the original file
+    _, res = dbx.files_download(SRC_PATH)
+    file_content = res.content
+
+    # Upload to the new location with overwrite
+    dbx.files_upload(
+        file_content,
+        DEST_PATH,
+        mode=WriteMode("overwrite")
+    )
+    
+    print("added_into_archive")
+
 
 
 # In[7]:
@@ -656,6 +693,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
