@@ -92,7 +92,7 @@ raid_season = data_raid_generic['season']
 url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
 
 
-"""
+
 
 #read existing toplines file, to check for the latest season from api vs latest one in the existing file
 
@@ -126,7 +126,6 @@ else:
     
     print("added_into_archive")
 
-"""
 
 
 # In[7]:
@@ -694,6 +693,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
