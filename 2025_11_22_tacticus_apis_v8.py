@@ -88,10 +88,8 @@ r_raid = requests.get(url_raid_generic, headers = headers)
 data_raid_generic = r_raid.json()
 
 #check whether there are any battles in the latest season log. If there are any - proceed. If everything is empty - pull data for previous season
-if data_raid_generic['entries'] == []:
-    raid_season = data_raid_generic['season'] - 1
-else:
-    raid_season = data_raid_generic['season']
+
+raid_season = 88
 
 url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
 
@@ -696,6 +694,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
