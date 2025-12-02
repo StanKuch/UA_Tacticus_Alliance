@@ -93,9 +93,6 @@ if data_raid_generic['entries'] == []:
 else:
     raid_season = data_raid_generic['season']
 
-#backstop solution for now to overwrite raid season flag
-raid_season = 88
-
 url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
 
 
@@ -178,7 +175,7 @@ def get_guild_data(guild_api, global_member_list):
     ])
     
     #join data from guild table
-    df_raid_log = df_raid_log.merge(global_member_list, on='userId', how='left')
+    df_raid_log = df_raid_log.merge(df_members, on='userId', how='left')
 
     #add unique index number for each attack
     df_raid_log['attack_index'] = range(1, len(df_raid_log) + 1)
@@ -699,6 +696,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
