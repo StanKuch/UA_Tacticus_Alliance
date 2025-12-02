@@ -89,7 +89,10 @@ data_raid_generic = r_raid.json()
 
 raid_season = data_raid_generic['season']
 
-url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
+#url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
+
+#backstop solution for now
+url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/88'
 
 
 
@@ -693,6 +696,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
