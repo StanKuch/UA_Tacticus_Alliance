@@ -88,8 +88,10 @@ r_raid = requests.get(url_raid_generic, headers = headers)
 data_raid_generic = r_raid.json()
 
 #check whether there are any battles in the latest season log. If there are any - proceed. If everything is empty - pull data for previous season
-
-raid_season = 88
+if data_raid_generic['entries'] == []:
+    raid_season = data_raid_generic['season'] - 1
+else:
+    raid_season = data_raid_generic['season']
 
 url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
 
@@ -173,7 +175,8 @@ def get_guild_data(guild_api, global_member_list):
     ])
     
     #join data from guild table
-    df_raid_log = df_raid_log.merge(df_members, on='userId', how='left')
+    #go to global_member_list rather than df_members, as this way we can pick up ppl who played but left the guild
+    df_raid_log = df_raid_log.merge(global_member_list, on='userId', how='left')
 
     #add unique index number for each attack
     df_raid_log['attack_index'] = range(1, len(df_raid_log) + 1)
@@ -694,6 +697,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
