@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[24]:
+# In[105]:
 
 
 import re
@@ -26,7 +26,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 
 
-# In[23]:
+# In[107]:
 
 
 #environmental variables for secrets use
@@ -40,7 +40,8 @@ api_vn = os.environ["api_vn"]
 api_ky = os.environ["api_ky"]
 dropbox_path = os.environ["dropbox_path"]
 
-# In[4]:
+
+# In[108]:
 
 
 """
@@ -71,14 +72,14 @@ file_content = res.content
 global_member_list = pd.read_excel(BytesIO(file_content), engine='openpyxl')
 
 
-# In[5]:
+# In[109]:
 
 
 url_guild = 'https://api.tacticusgame.com/api/v1/guild'
 url_raid_generic = 'https://api.tacticusgame.com/api/v1/guildRaid'
 
 
-# In[6]:
+# In[110]:
 
 
 #get raid season number programmatically and make raid link season-specific
@@ -96,6 +97,8 @@ else:
 url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
 
 
+# In[111]:
+
 
 #read existing toplines file, to check for the latest season from api vs latest one in the existing file
 
@@ -106,6 +109,7 @@ file_content_toplines = res_toplines.content
 global_existing_toplines = pd.read_excel(BytesIO(file_content_toplines), engine='openpyxl')
 
 
+# In[112]:
 
 
 #if season from api is new - copy existing file into Archive and overwrite existing file
@@ -130,8 +134,7 @@ else:
     print("added_into_archive")
 
 
-
-# In[7]:
+# In[113]:
 
 
 #define_main_input_function
@@ -175,7 +178,6 @@ def get_guild_data(guild_api, global_member_list):
     ])
     
     #join data from guild table
-    #go to global_member_list rather than df_members, as this way we can pick up ppl who played but left the guild
     df_raid_log = df_raid_log.merge(global_member_list, on='userId', how='left')
 
     #add unique index number for each attack
@@ -286,6 +288,21 @@ def get_guild_data(guild_api, global_member_list):
 
     #add guild name
     df_raid_log['guild'] = guild_name
+
+    #new component - finishing battle flag
+    df_raid_log['finishing_battle_flag'] = np.where((df_raid_log['remainingHp'] == 0) & 
+                                                    (df_raid_log['damageType'] == 'Battle') &
+                                                    (df_raid_log['damageDealt'] < df_raid_log['maxHp']), 
+                                                    1, 0)
+
+    #defining the legitimate attack - should be on the enemy with at least 6x hp vs the average bomb in the guild
+    avg_bomb_damage_per_guild = int(np.average(df_raid_log.loc[df_raid_log['damageType'] == 'Bomb', 'damageDealt']))
+
+    #flag whether the finishing battle is legitimate
+    finishing_multiplier = 6
+    df_raid_log['legitimate_finishing_battle_flag'] = np.where((df_raid_log['finishing_battle_flag'] == 1) & 
+                                                               (df_raid_log['damageDealt'] >= avg_bomb_damage_per_guild * finishing_multiplier),
+                                                               1, 0)
             
     #aggregated raid data on player level
     aggregated_raid_data = (
@@ -399,7 +416,12 @@ def get_guild_data(guild_api, global_member_list):
             'avg_damage_meta_mech_legendary': g.loc[(g['damageType'] == 'Battle') & (g['meta_mech_flag'] == 1) & (g['tier'] >= 4),'damageDealt'].mean(),
             'avg_damage_meta_multi_legendary': g.loc[(g['damageType'] == 'Battle') & (g['meta_multi_flag'] == 1) & (g['tier'] >= 4),'damageDealt'].mean(),
             'avg_damage_meta_neuro_legendary': g.loc[(g['damageType'] == 'Battle') & (g['meta_neuro_flag'] == 1) & (g['tier'] >= 4),'damageDealt'].mean(),
-            'avg_damage_meta_custodes_legendary': g.loc[(g['damageType'] == 'Battle') & (g['meta_custodes_flag'] == 1) & (g['tier'] >= 4),'damageDealt'].mean()
+            'avg_damage_meta_custodes_legendary': g.loc[(g['damageType'] == 'Battle') & (g['meta_custodes_flag'] == 1) & (g['tier'] >= 4),'damageDealt'].mean(),
+
+            #legendary finishing attacks and legitimate finishing attacks
+            'num_legendary_finishing_battles': g.loc[(g['finishing_battle_flag'] == 1) & (g['tier'] >= 4),'damageDealt'].count(),
+            'num_legendary_legitimate_finishing_battles': g.loc[(g['legitimate_finishing_battle_flag'] == 1) & (g['tier'] >= 4),'damageDealt'].count(),
+            'avg_damage_battles_legendary_non_finishing': g.loc[(g['damageType'] == 'Battle') & (g['tier'] >= 4) & (g['legitimate_finishing_battle_flag'] == 0),'damageDealt'].mean()
         }))
         .reset_index()
     )
@@ -419,10 +441,13 @@ def get_guild_data(guild_api, global_member_list):
     df_raid_log['unit_name'] = df_raid_log['unitId'].str.extract(pattern)
     df_raid_log['unit_name'] = df_raid_log['rarity'] + df_raid_log['encounterType'] + "_" + df_raid_log['unit_name']
 
-    boss_df = (
+    #create boss df, split it into regular and legitimate finishing attacks, then merge them to create separate columns for KPIs for both
+    #regular attacks
+    boss_df_regular = (
         df_raid_log[
             (df_raid_log['damageType'] == 'Battle') &
-            (df_raid_log['tier'] >= 4)
+            (df_raid_log['tier'] >= 4) &
+            (df_raid_log['legitimate_finishing_battle_flag'] == 0)
         ]
         .groupby(['user_nicknames', 'unit_name'])['damageDealt']
         .agg(
@@ -434,11 +459,38 @@ def get_guild_data(guild_api, global_member_list):
     )
 
     #add guild name to be used further on
-    boss_df['guild'] = guild_name
-    boss_df = boss_df[['guild','user_nicknames','unit_name','num_battles','total_damage','avg_damage']]
+    boss_df_regular['guild'] = guild_name
+    boss_df_regular = boss_df_regular[['guild','user_nicknames','unit_name','num_battles','total_damage','avg_damage']]
+
+    #legit finishing attacks
+    boss_df_legit_finish = (
+        df_raid_log[
+            (df_raid_log['damageType'] == 'Battle') &
+            (df_raid_log['tier'] >= 4) &
+            (df_raid_log['legitimate_finishing_battle_flag'] == 1)
+        ]
+        .groupby(['user_nicknames', 'unit_name'])['damageDealt']
+        .agg(
+            num_finish_battles='count',
+            total_finish_damage='sum',
+            avg_finish_damage='mean'
+        )
+        .reset_index()
+    )
+
+    #add guild name to be used further on
+    boss_df_legit_finish['guild'] = guild_name
+    boss_df_legit_finish = boss_df_legit_finish[['guild','user_nicknames','unit_name',
+                                                 'num_finish_battles','total_finish_damage','avg_finish_damage']]
+
+    boss_df = boss_df_regular.merge(boss_df_legit_finish, on = ['guild','user_nicknames','unit_name'], how = 'outer')
+    boss_df = boss_df.fillna(0)
+    boss_df = boss_df.round()
 
     #pivot and format toplines per bosses
-    pivot_boss_df = boss_df.pivot(index='user_nicknames', columns='unit_name', values=['num_battles', 'total_damage', 'avg_damage'])
+    pivot_boss_df = boss_df.pivot(index='user_nicknames', columns='unit_name', 
+                                  values=['num_battles', 'total_damage', 'avg_damage', 
+                                         'num_finish_battles','total_finish_damage','avg_finish_damage'])
     pivot_boss_df.columns = ['_'.join(str(s).strip() for s in col if s) for col in pivot_boss_df.columns]
     pivot_boss_df.reset_index(inplace=True)
     pivot_boss_df = pivot_boss_df.fillna(0)
@@ -454,7 +506,7 @@ def get_guild_data(guild_api, global_member_list):
     return df_members, df_raid_log, aggregated_raid_data, boss_df
 
 
-# In[8]:
+# In[114]:
 
 
 #set dummy dfs to be further populated
@@ -505,8 +557,7 @@ except Exception:
     print("ky_error")
 
 
-
-# In[9]:
+# In[115]:
 
 
 #create an empty dfs to be populated with further pulls
@@ -542,13 +593,27 @@ for df_order in range(0,len(processed_logs)):
     global_aggr_raid_log = pd.concat([global_aggr_raid_log, processed_aggr_logs[df_order]], axis=0, ignore_index=True)
 
 
-# In[10]:
+# In[123]:
+
+
+#create copy of the logs to export further on
+export_full_logs = benchmark_total_boss_df
+#remove ids for privacy reasons
+export_full_logs = export_full_logs.drop('userId', axis=1)
+#put couple of helpful columns in front
+front_cols = ['guild', 'user_nicknames', 'attack_index']
+export_full_logs = export_full_logs[front_cols + [c for c in export_full_logs.columns if c not in front_cols]]
+
+
+# In[117]:
 
 
 #calculate benchmarks for boss damage
+#remove any finishing hits, regardless whether legitimate from benchmarking calculations
 benchmark_total_boss_df = benchmark_total_boss_df.loc[
     (benchmark_total_boss_df['damageType'] == 'Battle') &
-    (benchmark_total_boss_df['tier'] >= 4)
+    (benchmark_total_boss_df['tier'] >= 4) &
+    (benchmark_total_boss_df['finishing_battle_flag'] == 0)
 ].groupby(['guild', 'unit_name']).apply(lambda g: pd.Series({
     'benchmark_num_battles': g['damageDealt'].count(),
     'benchmark_total_damage': g['damageDealt'].sum(),
@@ -560,22 +625,43 @@ benchmark_total_boss_df = benchmark_total_boss_df.groupby(['unit_name']).apply(l
 })).reset_index()
 
 
-# In[11]:
+# In[118]:
 
 
 #calculate efficiency for individual bosses for everybody
 global_boss_df = global_boss_df.merge(benchmark_total_boss_df[['unit_name','benchmark_max_avg_damage']], on='unit_name', how='left')
 
 global_boss_df['global_efficiency'] = global_boss_df['avg_damage'] / global_boss_df['benchmark_max_avg_damage']
-global_boss_df['global_points'] = global_boss_df['global_efficiency'] * global_boss_df['num_battles']
-
 global_boss_df['global_efficiency'] = global_boss_df['global_efficiency'].round(3)
-global_boss_df['global_points'] = global_boss_df['global_points'].round(3)
+global_boss_df = global_boss_df.fillna(0)
+
+#take into account finishing hits, with the following logic:
+#if there are both finishing and regular hits for the same boss - take efficiency from regular hits and * by num regulat + finishing hits for points
+#if there are only finishing hits - take average efficiency per player on regular hits and use it instead
+
+#find playerwise efficiency on non-finishing battles to be used as a plug
+global_boss_df_playerwise_efficiency = global_boss_df.loc[
+    (global_boss_df['num_battles'] > 0)
+].groupby(['guild', 'user_nicknames']).apply(lambda g: pd.Series({
+    'benchmark_avg_efficiency_plug': g['global_efficiency'].mean()
+})).reset_index()
+
+global_boss_df = global_boss_df.merge(global_boss_df_playerwise_efficiency, on=['guild', 'user_nicknames'], how='left')
+
+global_boss_df['global_points'] = np.where((global_boss_df['num_battles'] > 0) & (global_boss_df['num_finish_battles'] > 0),
+                                    global_boss_df['global_efficiency'] * (global_boss_df['num_battles'] + global_boss_df['num_finish_battles']),
+                                  np.where((global_boss_df['num_battles'] > 0) & (global_boss_df['num_finish_battles'] == 0),
+                                    global_boss_df['global_efficiency'] * global_boss_df['num_battles'],
+                                  np.where((global_boss_df['num_battles'] == 0) & (global_boss_df['num_finish_battles'] > 0),
+                                    global_boss_df['benchmark_avg_efficiency_plug'] * global_boss_df['num_finish_battles'],
+                                    0)))
+
+global_boss_df = global_boss_df.round(3)
 
 global_boss_df['guild_and_name'] = global_boss_df['guild'] + global_boss_df['user_nicknames']
 
 
-# In[12]:
+# In[119]:
 
 
 #calculate total global efficiency, aggregated across all bosses on a player level
@@ -588,7 +674,7 @@ aggr_global_boss_df = aggr_global_boss_df.sort_values(by='total_points',ascendin
 aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_global_boss_df['user_nicknames']
 
 
-# In[13]:
+# In[120]:
 
 
 #calculate total points per boss, merge with aggr_global_boss_df
@@ -606,10 +692,13 @@ global_detailed_toplines = global_aggr_raid_log[[
     'user_nicknames',
     "add_circles",
     "num_battles",
-    'num_bombs',
+    "num_bombs",
     "avg_damage_battles",
     "num_battles_legendary",
     "avg_damage_battles_legendary",
+    "num_legendary_finishing_battles",	
+    "num_legendary_legitimate_finishing_battles",
+    "avg_damage_battles_legendary_non_finishing",
     'num_battles_meta_mech_legendary',
     'num_battles_meta_custodes_legendary',
     'num_battles_meta_neuro_legendary',
@@ -622,7 +711,7 @@ global_aggr_toplines = global_detailed_toplines[[
     "guild",
     "user_nicknames",
     "num_battles",
-    "avg_damage_battles_legendary",
+    "avg_damage_battles_legendary_non_finishing",
     "total_points"
 ]]
 
@@ -635,7 +724,7 @@ global_aggr_toplines = global_aggr_toplines[[
     "guild",
     "user_nicknames",
     "num_battles",
-    "avg_damage_battles_legendary",
+    "avg_damage_battles_legendary_non_finishing",
     "total_points"
 ]]
 
@@ -644,7 +733,7 @@ global_detailed_toplines = global_detailed_toplines.drop('guild_and_name', axis=
 global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 
-# In[17]:
+# In[125]:
 
 
 output_file = 'global_toplines.xlsx'
@@ -654,12 +743,7 @@ with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     global_aggr_toplines.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
     global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
     global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
-    global_aggr_raid_log.to_excel(writer, sheet_name='Full_alliance_detaield', index=False)
-    us_aggr_raid_log.to_excel(writer, sheet_name='US_detailed', index=False)
-    bi_aggr_raid_log.to_excel(writer, sheet_name='BI_detailed', index=False)
-    vn_aggr_raid_log.to_excel(writer, sheet_name='VN_detailed', index=False)
-    ky_aggr_raid_log.to_excel(writer, sheet_name='KY_detailed', index=False)
-
+    export_full_logs.to_excel(writer, sheet_name='Full_logs', index=False)
 
 fixed_width = 25
 
@@ -677,7 +761,7 @@ for sheet in wb.worksheets:
 wb.save(output_file)
 
 
-# In[16]:
+# In[126]:
 
 
 # Connect to Dropbox
@@ -697,17 +781,4 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
-
-
-
-
-
-
-
-
-
-
-
-
-
 
