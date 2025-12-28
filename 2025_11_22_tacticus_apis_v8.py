@@ -94,9 +94,6 @@ if data_raid_generic['entries'] == []:
 else:
     raid_season = data_raid_generic['season']
 
-url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season)
-
-
 # In[111]:
 
 
@@ -138,7 +135,9 @@ else:
 
 
 #define_main_input_function
-def get_guild_data(guild_api, global_member_list):
+def get_guild_data(guild_api, global_member_list, raid_season_input):
+    #define season
+    url_raid = 'https://api.tacticusgame.com/api/v1/guildRaid/' + str(raid_season_input)
     #pull guild data
     headers = {"accept": "application/json", "X-API-KEY": guild_api}
     r_guild = requests.get(url_guild, headers = headers)
@@ -265,11 +264,18 @@ def get_guild_data(guild_api, global_member_list):
                                     np.where(df_raid_log['Unit_4_name'] == "admecRuststalker", 1,
                                     np.where(df_raid_log['Unit_5_name'] == "admecRuststalker", 1,0)))))
 
-    df_raid_log['meta_multi_flag'] = np.where(df_raid_log['Unit_1_name'] == "tauAunShi", 1,
-                                     np.where(df_raid_log['Unit_2_name'] == "tauAunShi", 1,
-                                     np.where(df_raid_log['Unit_3_name'] == "tauAunShi", 1,
-                                     np.where(df_raid_log['Unit_4_name'] == "tauAunShi", 1,
-                                     np.where(df_raid_log['Unit_5_name'] == "tauAunShi", 1,0)))))
+    #Ragnar but not Karian
+    df_raid_log['meta_multi_flag'] = np.where(
+                                        (df_raid_log['Unit_1_name'] == "custoBladeChampion") |
+                                        (df_raid_log['Unit_2_name'] == "custoBladeChampion") |
+                                        (df_raid_log['Unit_3_name'] == "custoBladeChampion") |
+                                        (df_raid_log['Unit_4_name'] == "custoBladeChampion") |
+                                        (df_raid_log['Unit_5_name'] == "custoBladeChampion"), 0,
+                                     np.where(df_raid_log['Unit_1_name'] == "spaceBlackmane", 1,
+                                     np.where(df_raid_log['Unit_2_name'] == "spaceBlackmane", 1,
+                                     np.where(df_raid_log['Unit_3_name'] == "spaceBlackmane", 1,
+                                     np.where(df_raid_log['Unit_4_name'] == "spaceBlackmane", 1,
+                                     np.where(df_raid_log['Unit_5_name'] == "spaceBlackmane", 1,0))))))
 
     df_raid_log['meta_neuro_flag'] = np.where(df_raid_log['Unit_1_name'] == "tyranNeurothrope", 1,
                                      np.where(df_raid_log['Unit_2_name'] == "tyranNeurothrope", 1,
@@ -439,7 +445,7 @@ def get_guild_data(guild_api, global_member_list):
     #catch formatted version of side bosses and bosses names
     pattern = r'(?:.*?\d+){2}(.*)$'
     df_raid_log['unit_name'] = df_raid_log['unitId'].str.extract(pattern)
-    df_raid_log['unit_name'] = df_raid_log['rarity'] + df_raid_log['encounterType'] + "_" + df_raid_log['unit_name']
+    df_raid_log['unit_name'] = df_raid_log['rarity'] + df_raid_log['encounterType'] + "_" + df_raid_log['set'].values.astype(str) + "_" + df_raid_log['unit_name']
 
     #create boss df, split it into regular and legitimate finishing attacks, then merge them to create separate columns for KPIs for both
     #regular attacks
@@ -532,26 +538,26 @@ ky_aggr_raid_log = pd.DataFrame()
 
 #run the function to pull and format data
 try:
-    bi_members, bi_source_raid_log, bi_aggr_raid_log, bi_boss_df = get_guild_data(api_bi, global_member_list)
+    bi_members, bi_source_raid_log, bi_aggr_raid_log, bi_boss_df = get_guild_data(api_bi, global_member_list, raid_season)
     print("bi_done")
 except Exception:
     print("bi_error")
     
 try:
-    us_members, us_source_raid_log, us_aggr_raid_log, us_boss_df = get_guild_data(api_us, global_member_list)
+    us_members, us_source_raid_log, us_aggr_raid_log, us_boss_df = get_guild_data(api_us, global_member_list, raid_season)
     print("us_done")
 except Exception:
     print("us_error")
 
 try:
-    vn_members, vn_source_raid_log, vn_aggr_raid_log, vn_boss_df = get_guild_data(api_vn, global_member_list)
+    vn_members, vn_source_raid_log, vn_aggr_raid_log, vn_boss_df = get_guild_data(api_vn, global_member_list, raid_season)
     print("vn_done")
 except Exception:
     print("vn_error")
     
 
 try:
-    ky_members, ky_source_raid_log, ky_aggr_raid_log, ky_boss_df = get_guild_data(api_ky, global_member_list)
+    ky_members, ky_source_raid_log, ky_aggr_raid_log, ky_boss_df = get_guild_data(api_ky, global_member_list, raid_season)
     print("ky_done")
 except Exception:
     print("ky_error")
@@ -733,6 +739,99 @@ global_detailed_toplines = global_detailed_toplines.drop('guild_and_name', axis=
 global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 
+######################## create new dataframe, with damage toplines for all bosses across meta teams
+
+# In[new cell 1]:
+
+# get data for last 5 seasons
+bi_members_s0, bi_source_raid_log_s0, bi_aggr_raid_log_s0, bi_boss_df_s0 = get_guild_data(api_bi, global_member_list, raid_season)
+us_members_s0, us_source_raid_log_s0, us_aggr_raid_log_s0, us_boss_df_s0 = get_guild_data(api_us, global_member_list, raid_season)
+vn_members_s0, vn_source_raid_log_s0, vn_aggr_raid_log_s0, vn_boss_df_s0 = get_guild_data(api_vn, global_member_list, raid_season)
+ky_members_s0, ky_source_raid_log_s0, ky_aggr_raid_log_s0, ky_boss_df_s0 = get_guild_data(api_ky, global_member_list, raid_season)
+
+bi_members_s1, bi_source_raid_log_s1, bi_aggr_raid_log_s1, bi_boss_df_s1 = get_guild_data(api_bi, global_member_list, raid_season-1)
+us_members_s1, us_source_raid_log_s1, us_aggr_raid_log_s1, us_boss_df_s1 = get_guild_data(api_us, global_member_list, raid_season-1)
+vn_members_s1, vn_source_raid_log_s1, vn_aggr_raid_log_s1, vn_boss_df_s1 = get_guild_data(api_vn, global_member_list, raid_season-1)
+ky_members_s1, ky_source_raid_log_s1, ky_aggr_raid_log_s1, ky_boss_df_s1 = get_guild_data(api_ky, global_member_list, raid_season-1)
+
+bi_members_s2, bi_source_raid_log_s2, bi_aggr_raid_log_s2, bi_boss_df_s2 = get_guild_data(api_bi, global_member_list, raid_season-2)
+us_members_s2, us_source_raid_log_s2, us_aggr_raid_log_s2, us_boss_df_s2 = get_guild_data(api_us, global_member_list, raid_season-2)
+vn_members_s2, vn_source_raid_log_s2, vn_aggr_raid_log_s2, vn_boss_df_s2 = get_guild_data(api_vn, global_member_list, raid_season-2)
+ky_members_s2, ky_source_raid_log_s2, ky_aggr_raid_log_s2, ky_boss_df_s2 = get_guild_data(api_ky, global_member_list, raid_season-2)
+
+bi_members_s3, bi_source_raid_log_s3, bi_aggr_raid_log_s3, bi_boss_df_s3 = get_guild_data(api_bi, global_member_list, raid_season-3)
+us_members_s3, us_source_raid_log_s3, us_aggr_raid_log_s3, us_boss_df_s3 = get_guild_data(api_us, global_member_list, raid_season-3)
+vn_members_s3, vn_source_raid_log_s3, vn_aggr_raid_log_s3, vn_boss_df_s3 = get_guild_data(api_vn, global_member_list, raid_season-3)
+ky_members_s3, ky_source_raid_log_s3, ky_aggr_raid_log_s3, ky_boss_df_s3 = get_guild_data(api_ky, global_member_list, raid_season-3)
+
+bi_members_s4, bi_source_raid_log_s4, bi_aggr_raid_log_s4, bi_boss_df_s4 = get_guild_data(api_bi, global_member_list, raid_season-4)
+us_members_s4, us_source_raid_log_s4, us_aggr_raid_log_s4, us_boss_df_s4 = get_guild_data(api_us, global_member_list, raid_season-4)
+vn_members_s4, vn_source_raid_log_s4, vn_aggr_raid_log_s4, vn_boss_df_s4 = get_guild_data(api_vn, global_member_list, raid_season-4)
+ky_members_s4, ky_source_raid_log_s4, ky_aggr_raid_log_s4, ky_boss_df_s4 = get_guild_data(api_ky, global_member_list, raid_season-4)
+
+
+# concat dataframes across guilds for last 5 seasons
+concat_raid_log = pd.concat([    
+    bi_source_raid_log_s0, 
+    us_source_raid_log_s0,
+    vn_source_raid_log_s0,
+    ky_source_raid_log_s0,
+    
+    bi_source_raid_log_s1, 
+    us_source_raid_log_s1,
+    vn_source_raid_log_s1,
+    ky_source_raid_log_s1,
+
+    bi_source_raid_log_s2, 
+    us_source_raid_log_s2,
+    vn_source_raid_log_s2,
+    ky_source_raid_log_s2,
+
+    bi_source_raid_log_s3, 
+    us_source_raid_log_s3,
+    vn_source_raid_log_s3,
+    ky_source_raid_log_s3,
+
+    bi_source_raid_log_s4, 
+    us_source_raid_log_s4,
+    vn_source_raid_log_s4,
+    ky_source_raid_log_s4
+], axis=0, ignore_index=True)
+
+# find max damage per meta team
+meta_boss_df = concat_raid_log.loc[
+    (concat_raid_log['damageType'] == 'Battle') &
+    (concat_raid_log['tier'] >= 4)
+].groupby(['unit_name']).apply(lambda g: pd.Series({
+    'set': g['set'].max(),
+    'max_mech_damage': g.loc[(g['meta_mech_flag'] == 1),'damageDealt'].max(),
+    'max_multi_damage': g.loc[(g['meta_multi_flag'] == 1),'damageDealt'].max(),
+    'max_neuro_damage': g.loc[(g['meta_neuro_flag'] == 1),'damageDealt'].max(),
+    'max_custodes_damage': g.loc[(g['meta_custodes_flag'] == 1),'damageDealt'].max(),
+})).reset_index()
+
+# format and sort the output
+meta_boss_df  = meta_boss_df.fillna(0)
+meta_boss_df_cols = meta_boss_df.columns[1:]
+meta_boss_df[meta_boss_df_cols] = meta_boss_df[meta_boss_df_cols].apply(
+    lambda c: pd.to_numeric(c, errors='coerce').round(0).astype('Int64')
+)
+
+meta_boss_df = meta_boss_df.sort_values(
+    by=['set', 'unit_name'],
+    ascending=[True, False]
+)
+
+meta_boss_df['_is_mythic'] = meta_boss_df['unit_name'].str.contains('Mythic', na=False)
+meta_boss_df = pd.concat([    
+    meta_boss_df.loc[meta_boss_df['_is_mythic'] == False],
+    meta_boss_df.loc[meta_boss_df['_is_mythic'] == True],
+])
+
+meta_boss_df = meta_boss_df.drop(columns=['set'])
+meta_boss_df = meta_boss_df.drop(columns=['_is_mythic'])
+
+
 # In[125]:
 
 
@@ -743,6 +842,7 @@ with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     global_aggr_toplines.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
     global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
     global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
+    meta_boss_df.to_excel(writer, sheet_name='Meta_boss_damage_df', index=False)
     export_full_logs.to_excel(writer, sheet_name='Full_logs', index=False)
 
 fixed_width = 25
