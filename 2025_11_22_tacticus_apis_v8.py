@@ -886,6 +886,8 @@ wb.save(output_file)
 
 
 # In[new_cell_2]:
+
+
 # do colour and column width formatting for first tab
 wb = load_workbook('global_toplines.xlsx')
 ws = wb.active  # first sheet
@@ -924,7 +926,7 @@ if total_points_col:
     )
     ws.conditional_formatting.add(f"{col_letter}2:{col_letter}{ws.max_row}", rule)
 
-# Tailor column width
+# Tailor column width on the first tab
 ws = wb.active 
 ws.column_dimensions['A'].width = 14
 ws.column_dimensions['B'].width = 30
@@ -933,6 +935,26 @@ ws.column_dimensions['D'].width = 12
 ws.column_dimensions['E'].width = 20
 ws.column_dimensions['F'].width = 15
 ws.column_dimensions['G'].width = 15
+
+
+# Do row-wise colour coding in the 2nd tab
+ws = wb['Meta_boss_damage_df']
+
+# Define green fill
+green_fill = PatternFill(start_color="90EE90", end_color="90EE90", fill_type="solid")
+
+# Iterate over rows (skip header)
+for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+    # Skip first column if non-numeric
+    numeric_cells = row[1:]  
+    max_value = max(cell.value for cell in numeric_cells if isinstance(cell.value, (int, float)))
+    
+    # Apply green fill to max value(s)
+    for cell in numeric_cells:
+        if cell.value == max_value:
+            cell.fill = green_fill
+
+ws.column_dimensions['A'].width = 32
 
 # Save workbook
 wb.save('global_toplines.xlsx')
@@ -959,5 +981,4 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
-
 
