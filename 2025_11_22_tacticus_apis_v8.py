@@ -926,13 +926,13 @@ if total_points_col:
 
 # Tailor column width
 ws = wb.active 
-ws.column_dimensions['A'].width = 10
-ws.column_dimensions['B'].width = 25
+ws.column_dimensions['A'].width = 14
+ws.column_dimensions['B'].width = 30
 ws.column_dimensions['C'].width = 20
-ws.column_dimensions['D'].width = 10
-ws.column_dimensions['E'].width = 15
-ws.column_dimensions['F'].width = 10
-ws.column_dimensions['G'].width = 10
+ws.column_dimensions['D'].width = 12
+ws.column_dimensions['E'].width = 20
+ws.column_dimensions['F'].width = 15
+ws.column_dimensions['G'].width = 15
 
 # Save workbook
 wb.save('global_toplines.xlsx')
@@ -959,4 +959,5 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
