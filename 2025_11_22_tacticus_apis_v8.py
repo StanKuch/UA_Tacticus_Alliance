@@ -868,6 +868,86 @@ meta_boss_df = meta_boss_df[[
 ]]
 
 
+# In[new_cell_4]:
+
+
+######################### create a boss-wise data frame, with rows as ppl and pivoted stats per boss in columns
+boss_wise_points = global_boss_df
+
+boss_wise_points = boss_wise_points[[
+    "guild",
+    "user_nicknames",
+    "unit_name",
+    "num_battles",
+    "avg_damage",
+    "global_efficiency",
+    "global_points"
+]]
+
+#get the unique list of bosses
+unique_list = boss_wise_points['unit_name'].unique().tolist()
+
+#merge total points and battles for further sorting
+total_scored_df = global_aggr_toplines[[
+    "guild",
+    "user_nicknames",
+    "num_battles",
+    "total_points"
+]].rename(columns={
+    "num_battles": "overall_battles",
+    "total_points": "overall_points"
+})
+
+boss_wise_points = boss_wise_points.merge(total_scored_df, on=['guild','user_nicknames'], how='left')
+
+#sort the unique list of bosses
+sorted_list = sorted(
+    unique_list,
+    key=lambda x: int(re.search(r'\d+', x).group())
+)
+
+sorted_list = sorted(
+    sorted_list,
+    key=lambda x: (
+        'Mythic' in x,
+        int(re.search(r'\d+', x).group())
+    )
+)
+
+boss_wise_points_pivot = (
+    boss_wise_points
+    .pivot(
+        index=['guild', 'user_nicknames', "overall_battles", "overall_points"],
+        columns='unit_name',
+        values=[
+            'num_battles',
+            'avg_damage',
+            'global_efficiency',
+            'global_points'
+        ]
+    )
+    .swaplevel(0, 1, axis=1)
+    .sort_index(axis=1, level=0, sort_remaining=False)
+)
+
+metric_order = [
+    'num_battles',
+    'avg_damage',
+    'global_efficiency',
+    'global_points'
+]
+
+unit_order = sorted_list
+
+boss_wise_points_pivot = boss_wise_points_pivot.reindex(metric_order, axis=1, level=1)
+boss_wise_points_pivot = boss_wise_points_pivot.reindex(unit_order, axis=1, level=0)
+
+boss_wise_points_pivot.reset_index(inplace=True)
+boss_wise_points_pivot = test_pivot.fillna(0)
+
+boss_wise_points_pivot = boss_wise_points_pivot.sort_values(by='overall_points', ascending=False)
+
+
 # In[125]:
 
 
@@ -876,21 +956,24 @@ output_file = 'global_toplines.xlsx'
 # Write all sheets
 with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     global_aggr_toplines.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
-    meta_boss_df.to_excel(writer, sheet_name='Meta_boss_damage_df', index=False)
-    global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
+    meta_boss_df.to_excel(writer, sheet_name='Meta_boss_damage', index=False)
+    boss_wise_points_pivot.to_excel(writer, sheet_name='Boss_wise_points', index=True)
+    global_boss_df.to_excel(writer, sheet_name='Global_boss_data', index=False)
     global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
     export_full_logs.to_excel(writer, sheet_name='Full_logs', index=False)
 
-fixed_width = 25
+fixed_width = 20
 
 # Load the workbook
 wb = load_workbook(output_file)
 
 # Loop over all sheets in the workbook
+
+from openpyxl.utils import get_column_letter
+
 for sheet in wb.worksheets:
-    # Loop over all columns in the current sheet
-    for col_cells in sheet.iter_cols(min_col=1, max_col=sheet.max_column):
-        col_letter = col_cells[0].column_letter  # get column letter from first cell
+    for i in range(1, sheet.max_column + 1):
+        col_letter = get_column_letter(i)
         sheet.column_dimensions[col_letter].width = fixed_width
 
 # Save the workbook
@@ -950,7 +1033,7 @@ ws.column_dimensions['G'].width = 15
 
 
 # Do row-wise colour coding in the 2nd tab
-ws = wb['Meta_boss_damage_df']
+ws = wb['Meta_boss_damage']
 
 # Define green fill
 green_fill = PatternFill(start_color="90EE90", end_color="90EE90", fill_type="solid")
@@ -969,6 +1052,10 @@ for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
 ws.column_dimensions['A'].width = 21
 ws.column_dimensions['B'].width = 10
 ws.column_dimensions['C'].width = 25
+
+# Delete first column in boss pivot df
+ws = wb['Boss_wise_points']
+ws.column_dimensions['A'].hidden = True  # 1-based index
 
 # Save workbook
 wb.save('global_toplines.xlsx')
@@ -995,5 +1082,4 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
-
 
