@@ -179,6 +179,9 @@ def get_guild_data(guild_api, global_member_list, raid_season_input):
     #join data from guild table
     df_raid_log = df_raid_log.merge(global_member_list, on='userId', how='left')
 
+    #get user level from members table
+    df_raid_log = df_raid_log.merge(df_members[['userId', 'level']], on='userId', how='left')
+
     #add unique index number for each attack
     df_raid_log['attack_index'] = range(1, len(df_raid_log) + 1)
 
@@ -315,6 +318,9 @@ def get_guild_data(guild_api, global_member_list, raid_season_input):
         df_raid_log
         .groupby(['user_nicknames'])
         .apply(lambda g: pd.Series({
+            #level
+            'user_level': g['level'].max(),
+            
             #num attacks
             'num_attacks': g['attack_index'].count(),
             'num_bombs': (g['damageType'] == 'Bomb').sum(),
@@ -509,6 +515,22 @@ def get_guild_data(guild_api, global_member_list, raid_season_input):
     add_circles = (max(df_raid_log['tier']) - 5)/2
     aggregated_raid_data['add_circles'] = add_circles
 
+    #add flag for which meta team is dominant
+    aggregated_raid_data['max_archetype'] = aggregated_raid_data[[
+        'num_battles_meta_mech', 
+        'num_battles_meta_multi', 
+        'num_battles_meta_neuro', 
+        'num_battles_meta_custodes'
+    ]].idxmax(axis=1)
+
+    aggregated_raid_data['max_archetype'] = aggregated_raid_data['max_archetype'].map({
+        'num_battles_meta_mech': 'mech',
+        'num_battles_meta_multi': 'multi',
+        'num_battles_meta_neuro': 'neuro',
+        'num_battles_meta_custodes': 'custodes',
+    })
+
+
     return df_members, df_raid_log, aggregated_raid_data, boss_df
 
 
@@ -696,6 +718,8 @@ aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild
 global_detailed_toplines = global_aggr_raid_log[[
     'guild',
     'user_nicknames',
+    'user_level',
+    'max_archetype',
     "add_circles",
     "num_battles",
     "num_bombs",
@@ -716,28 +740,27 @@ global_detailed_toplines = global_detailed_toplines.sort_values(by='total_points
 global_aggr_toplines = global_detailed_toplines[[
     "guild",
     "user_nicknames",
+    'user_level',
+    'max_archetype',
     "num_battles",
-    "avg_damage_battles_legendary_non_finishing",
     "total_points"
 ]]
 
 global_aggr_toplines['raid_season'] = raid_season
-global_aggr_toplines['update_time'] = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
 global_aggr_toplines = global_aggr_toplines[[
     'raid_season',
-    'update_time',
     "guild",
     "user_nicknames",
+    'user_level',
+    'max_archetype',
     "num_battles",
-    "avg_damage_battles_legendary_non_finishing",
     "total_points"
 ]]
 
 #remove redundant columns
 global_detailed_toplines = global_detailed_toplines.drop('guild_and_name', axis=1)
 global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
-
 
 ######################## create new dataframe, with damage toplines for all bosses across meta teams
 
