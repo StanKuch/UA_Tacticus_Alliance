@@ -966,7 +966,9 @@ for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
         if cell.value == max_value:
             cell.fill = green_fill
 
-ws.column_dimensions['A'].width = 32
+ws.column_dimensions['A'].width = 21
+ws.column_dimensions['B'].width = 10
+ws.column_dimensions['C'].width = 25
 
 # Save workbook
 wb.save('global_toplines.xlsx')
@@ -993,4 +995,5 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
