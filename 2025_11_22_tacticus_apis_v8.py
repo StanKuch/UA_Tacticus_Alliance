@@ -855,6 +855,18 @@ meta_boss_df = pd.concat([
 meta_boss_df = meta_boss_df.drop(columns=['set'])
 meta_boss_df = meta_boss_df.drop(columns=['_is_mythic'])
 
+meta_boss_df[['rartiy_and_type', 'level', 'name']] = meta_boss_df['unit_name'].str.split('_', expand=True)
+
+meta_boss_df = meta_boss_df[[
+    "rartiy_and_type",
+    "level",
+    "name",
+    "max_mech_damage",
+    "max_multi_damage",
+    "max_neuro_damage",
+    "max_custodes_damage"
+]]
+
 
 # In[125]:
 
