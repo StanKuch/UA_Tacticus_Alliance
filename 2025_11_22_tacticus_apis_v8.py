@@ -24,6 +24,7 @@ pd.set_option('display.float_format', lambda x: '%.9f' % x)
 #color coding
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+from openpyxl.formatting.rule import ColorScaleRule
 
 
 # In[107]:
@@ -863,9 +864,9 @@ output_file = 'global_toplines.xlsx'
 # Write all sheets
 with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     global_aggr_toplines.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
-    global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
-    global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
     meta_boss_df.to_excel(writer, sheet_name='Meta_boss_damage_df', index=False)
+    global_boss_df.to_excel(writer, sheet_name='Global_boss_df', index=False)
+    global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
     export_full_logs.to_excel(writer, sheet_name='Full_logs', index=False)
 
 fixed_width = 25
@@ -882,6 +883,60 @@ for sheet in wb.worksheets:
 
 # Save the workbook
 wb.save(output_file)
+
+
+# In[new_cell_2]:
+# do colour and column width formatting for first tab
+wb = load_workbook('global_toplines.xlsx')
+ws = wb.active  # first sheet
+
+# Find column index for "num_battles"
+num_battles_col = None
+for idx, cell in enumerate(ws[1], 1):  # header row
+    if cell.value == 'num_battles':
+        num_battles_col = idx
+        break
+
+if num_battles_col:
+    col_letter = ws.cell(row=1, column=num_battles_col).column_letter
+    # Apply 3-color gradient: red → yellow → green
+    rule = ColorScaleRule(
+        start_type='min', start_color='FF6347',    # red
+        mid_type='percentile', mid_value=50, mid_color='FFFF00',  # yellow
+        end_type='max', end_color='90EE90'         # green
+    )
+    ws.conditional_formatting.add(f"{col_letter}2:{col_letter}{ws.max_row}", rule)
+
+# Find column index for "total_points"
+total_points_col = None
+for idx, cell in enumerate(ws[1], 1):  # header row
+    if cell.value == 'total_points':
+        total_points_col = idx
+        break
+
+if total_points_col:
+    col_letter = ws.cell(row=1, column=total_points_col).column_letter
+    # Apply 3-color gradient: red → yellow → green
+    rule = ColorScaleRule(
+        start_type='min', start_color='FF6347',    # red
+        mid_type='percentile', mid_value=50, mid_color='FFFF00',  # yellow
+        end_type='max', end_color='90EE90'         # green
+    )
+    ws.conditional_formatting.add(f"{col_letter}2:{col_letter}{ws.max_row}", rule)
+
+# Tailor column width
+ws = wb.active 
+ws.column_dimensions['A'].width = 10
+ws.column_dimensions['B'].width = 25
+ws.column_dimensions['C'].width = 20
+ws.column_dimensions['D'].width = 10
+ws.column_dimensions['E'].width = 15
+ws.column_dimensions['F'].width = 10
+ws.column_dimensions['G'].width = 10
+
+# Save workbook
+wb.save('global_toplines.xlsx')
+
 
 
 # In[126]:
