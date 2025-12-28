@@ -943,7 +943,7 @@ boss_wise_points_pivot = boss_wise_points_pivot.reindex(metric_order, axis=1, le
 boss_wise_points_pivot = boss_wise_points_pivot.reindex(unit_order, axis=1, level=0)
 
 boss_wise_points_pivot.reset_index(inplace=True)
-boss_wise_points_pivot = test_pivot.fillna(0)
+boss_wise_points_pivot = boss_wise_points_pivot.fillna(0)
 
 boss_wise_points_pivot = boss_wise_points_pivot.sort_values(by='overall_points', ascending=False)
 
@@ -1082,4 +1082,5 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
