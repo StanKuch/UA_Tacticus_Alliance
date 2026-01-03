@@ -948,6 +948,64 @@ boss_wise_points_pivot = boss_wise_points_pivot.fillna(0)
 boss_wise_points_pivot = boss_wise_points_pivot.sort_values(by='overall_points', ascending=False)
 
 
+# In[circles_1]:
+######################### create a circle-wise data frame, to check how many battles were spent for each boss each circle
+def get_circle_data(raid_log_df):
+    df1 = raid_log_df
+
+    #extract boss name
+    pattern = r'(?:.*?\d+){2}(.*)$'
+    df1['unit_name'] = df1['unitId'].str.extract(pattern)
+
+    #summarize damage per boss per circle
+    df1 = df1.loc[
+        (df1['damageType'] == 'Battle') &
+        (df1['tier'] >= 4)
+    ].groupby(['guild','unit_name', 'tier', 'set', 'rarity', 'encounterType']).apply(lambda g: pd.Series({
+        'num_battles': g['damageDealt'].count(),
+        'avg_damage': g['damageDealt'].mean()
+    })).reset_index()
+
+    #fix orders
+    df1['set_order'] = np.where(df1['rarity'] == 'Mythic', df1['set']+5, df1['set'])
+    df1['circles'] = np.ceil(df1['tier'] / 5).astype(int)
+    
+    df1 = df1.sort_values(by=['set_order'], ascending=True)
+    
+    df1.drop(['tier'], axis=1, inplace=True)
+    
+    #pivot the df with bosses as rows and circles as columns
+    df2 = (
+        df1
+        .pivot(
+            index=['guild','unit_name','rarity','encounterType','set', 'set_order'],
+            columns='circles',
+            values=[
+                'num_battles',
+                'avg_damage'
+            ]
+        ).swaplevel(0, 1, axis=1)
+        .sort_index(axis=1, level=0, sort_remaining=False)
+    )
+    
+    
+    df2 = df2.reset_index()
+    df2 = df2.sort_values(by=['set_order','encounterType'], ascending = [True, False])
+    
+    df2.drop(['set_order'], axis=1, inplace=True)
+    
+    return df2
+
+# In[circles_2]:
+#run this analysis for all guilds
+circle_raid_log = pd.DataFrame()
+
+circle_raid_log = pd.concat([circle_raid_log, get_circle_data(us_source_raid_log)], axis = 0)
+circle_raid_log = pd.concat([circle_raid_log, get_circle_data(bi_source_raid_log)], axis = 0)
+circle_raid_log = pd.concat([circle_raid_log, get_circle_data(vn_source_raid_log)], axis = 0)
+circle_raid_log = pd.concat([circle_raid_log, get_circle_data(ky_source_raid_log)], axis = 0)
+
+
 # In[125]:
 
 
@@ -958,6 +1016,7 @@ with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     global_aggr_toplines.to_excel(writer, sheet_name='Global_agregated_toplines', index=False)
     meta_boss_df.to_excel(writer, sheet_name='Meta_boss_damage', index=False)
     boss_wise_points_pivot.to_excel(writer, sheet_name='Boss_wise_points', index=True)
+    circle_raid_log.to_excel(writer, sheet_name='Circles_log', index=True)
     global_boss_df.to_excel(writer, sheet_name='Global_boss_data', index=False)
     global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
     export_full_logs.to_excel(writer, sheet_name='Full_logs', index=False)
@@ -1057,6 +1116,10 @@ ws.column_dimensions['C'].width = 25
 ws = wb['Boss_wise_points']
 ws.column_dimensions['A'].hidden = True  # 1-based index
 
+# Delete first column in circles df
+ws = wb['Circles_log']
+ws.column_dimensions['A'].hidden = True  # 1-based index
+
 # Save workbook
 wb.save('global_toplines.xlsx')
 
@@ -1082,5 +1145,4 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
-
 
