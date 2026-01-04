@@ -968,7 +968,7 @@ def get_circle_data(raid_log_df):
 
     #fix orders
     df1['set_order'] = np.where(df1['rarity'] == 'Mythic', df1['set']+5, df1['set'])
-    df1['circles'] = np.ceil(df1['tier'] / 5).astype(int)
+    df1['circles'] = np.ceil(((df1['tier']-3)/2)).astype(int)
     
     df1 = df1.sort_values(by=['set_order'], ascending=True)
     
@@ -1150,6 +1150,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
