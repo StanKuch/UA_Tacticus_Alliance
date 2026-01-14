@@ -950,51 +950,56 @@ boss_wise_points_pivot = boss_wise_points_pivot.sort_values(by='overall_points',
 
 # In[circles_1]:
 ######################### create a circle-wise data frame, to check how many battles were spent for each boss each circle
+######################### create a circle-wise data frame, to check how many battles were spent for each boss each circle
 def get_circle_data(raid_log_df):
+    
     df1 = raid_log_df
+    if max(df1['tier']) >= 4:
 
-    #extract boss name
-    pattern = r'(?:.*?\d+){2}(.*)$'
-    df1['unit_name'] = df1['unitId'].str.extract(pattern)
+        #extract boss name
+        pattern = r'(?:.*?\d+){2}(.*)$'
+        df1['unit_name'] = df1['unitId'].str.extract(pattern)
+    
+        #summarize damage per boss per circle
+        df1 = df1.loc[
+            (df1['damageType'] == 'Battle') &
+            (df1['tier'] >= 4)
+        ].groupby(['guild','unit_name', 'tier', 'set', 'rarity', 'encounterType']).apply(lambda g: pd.Series({
+            'num_battles': g['damageDealt'].count(),
+            'avg_damage': g['damageDealt'].mean()
+        })).reset_index()
 
-    #summarize damage per boss per circle
-    df1 = df1.loc[
-        (df1['damageType'] == 'Battle') &
-        (df1['tier'] >= 4)
-    ].groupby(['guild','unit_name', 'tier', 'set', 'rarity', 'encounterType']).apply(lambda g: pd.Series({
-        'num_battles': g['damageDealt'].count(),
-        'avg_damage': g['damageDealt'].mean()
-    })).reset_index()
-
-    #fix orders
-    df1['set_order'] = np.where(df1['rarity'] == 'Mythic', df1['set']+5, df1['set'])
-    df1['circles'] = np.ceil(((df1['tier']-3)/2)).astype(int)
-    
-    df1 = df1.sort_values(by=['set_order'], ascending=True)
-    
-    df1.drop(['tier'], axis=1, inplace=True)
-    
-    #pivot the df with bosses as rows and circles as columns
-    df2 = (
-        df1
-        .pivot(
-            index=['guild','unit_name','rarity','encounterType','set', 'set_order'],
-            columns='circles',
-            values=[
-                'num_battles',
-                'avg_damage'
-            ]
-        ).swaplevel(0, 1, axis=1)
-        .sort_index(axis=1, level=0, sort_remaining=False)
-    )
-    
-    
-    df2 = df2.reset_index()
-    df2 = df2.sort_values(by=['set_order','encounterType'], ascending = [True, False])
-    
-    df2.drop(['set_order'], axis=1, inplace=True)
-    
-    return df2
+        #fix orders
+        df1['set_order'] = np.where(df1['rarity'] == 'Mythic', df1['set']+5, df1['set'])
+        df1['circles'] = np.ceil(((df1['tier']-3)/2)).astype(int)
+        
+        df1 = df1.sort_values(by=['set_order'], ascending=True)
+        
+        df1.drop(['tier'], axis=1, inplace=True)
+        
+        #pivot the df with bosses as rows and circles as columns
+        df2 = (
+            df1
+            .pivot(
+                index=['guild','unit_name','rarity','encounterType','set', 'set_order'],
+                columns='circles',
+                values=[
+                    'num_battles',
+                    'avg_damage'
+                ]
+            ).swaplevel(0, 1, axis=1)
+            .sort_index(axis=1, level=0, sort_remaining=False)
+        )
+        
+        
+        df2 = df2.reset_index()
+        df2 = df2.sort_values(by=['set_order','encounterType'], ascending = [True, False])
+        
+        df2.drop(['set_order'], axis=1, inplace=True)
+        
+        return df2
+    else:
+        return pd.DataFrame()
 
 # In[circles_2]:
 #run this analysis for all guilds
@@ -1150,6 +1155,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
