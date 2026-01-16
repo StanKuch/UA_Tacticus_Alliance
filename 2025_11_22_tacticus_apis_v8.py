@@ -1021,7 +1021,7 @@ circle_raid_log[circle_raid_log_cols] = circle_raid_log[circle_raid_log_cols].ap
 #also add emoji with image of the leading character in each meta to the nickhame of the person for 
 
 #replace names of meta teams with emojis
-interim_frame = global_aggr_toplines
+interim_frame = global_aggr_toplines.copy()
 interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("neuro", "<:Neurothrope:1409879307014246560>")
 interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("mech", "<:Exitor:1409879259538915379>")
 interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("multi", "<:Ragnar:1409879314840682578>")
@@ -1252,4 +1252,5 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
