@@ -25,6 +25,7 @@ pd.set_option('display.float_format', lambda x: '%.9f' % x)
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import ColorScaleRule
+import json
 
 
 # In[107]:
@@ -950,56 +951,51 @@ boss_wise_points_pivot = boss_wise_points_pivot.sort_values(by='overall_points',
 
 # In[circles_1]:
 ######################### create a circle-wise data frame, to check how many battles were spent for each boss each circle
-######################### create a circle-wise data frame, to check how many battles were spent for each boss each circle
 def get_circle_data(raid_log_df):
-    
     df1 = raid_log_df
-    if max(df1['tier']) >= 4:
 
-        #extract boss name
-        pattern = r'(?:.*?\d+){2}(.*)$'
-        df1['unit_name'] = df1['unitId'].str.extract(pattern)
+    #extract boss name
+    pattern = r'(?:.*?\d+){2}(.*)$'
+    df1['unit_name'] = df1['unitId'].str.extract(pattern)
+
+    #summarize damage per boss per circle
+    df1 = df1.loc[
+        (df1['damageType'] == 'Battle') &
+        (df1['tier'] >= 4)
+    ].groupby(['guild','unit_name', 'tier', 'set', 'rarity', 'encounterType']).apply(lambda g: pd.Series({
+        'num_battles': g['damageDealt'].count(),
+        'avg_damage': g['damageDealt'].mean()
+    })).reset_index()
+
+    #fix orders
+    df1['set_order'] = np.where(df1['rarity'] == 'Mythic', df1['set']+5, df1['set'])
+    df1['circles'] = np.ceil(((df1['tier']-3)/2)).astype(int)
     
-        #summarize damage per boss per circle
-        df1 = df1.loc[
-            (df1['damageType'] == 'Battle') &
-            (df1['tier'] >= 4)
-        ].groupby(['guild','unit_name', 'tier', 'set', 'rarity', 'encounterType']).apply(lambda g: pd.Series({
-            'num_battles': g['damageDealt'].count(),
-            'avg_damage': g['damageDealt'].mean()
-        })).reset_index()
-
-        #fix orders
-        df1['set_order'] = np.where(df1['rarity'] == 'Mythic', df1['set']+5, df1['set'])
-        df1['circles'] = np.ceil(((df1['tier']-3)/2)).astype(int)
-        
-        df1 = df1.sort_values(by=['set_order'], ascending=True)
-        
-        df1.drop(['tier'], axis=1, inplace=True)
-        
-        #pivot the df with bosses as rows and circles as columns
-        df2 = (
-            df1
-            .pivot(
-                index=['guild','unit_name','rarity','encounterType','set', 'set_order'],
-                columns='circles',
-                values=[
-                    'num_battles',
-                    'avg_damage'
-                ]
-            ).swaplevel(0, 1, axis=1)
-            .sort_index(axis=1, level=0, sort_remaining=False)
-        )
-        
-        
-        df2 = df2.reset_index()
-        df2 = df2.sort_values(by=['set_order','encounterType'], ascending = [True, False])
-        
-        df2.drop(['set_order'], axis=1, inplace=True)
-        
-        return df2
-    else:
-        return pd.DataFrame()
+    df1 = df1.sort_values(by=['set_order'], ascending=True)
+    
+    df1.drop(['tier'], axis=1, inplace=True)
+    
+    #pivot the df with bosses as rows and circles as columns
+    df2 = (
+        df1
+        .pivot(
+            index=['guild','unit_name','rarity','encounterType','set', 'set_order'],
+            columns='circles',
+            values=[
+                'num_battles',
+                'avg_damage'
+            ]
+        ).swaplevel(0, 1, axis=1)
+        .sort_index(axis=1, level=0, sort_remaining=False)
+    )
+    
+    
+    df2 = df2.reset_index()
+    df2 = df2.sort_values(by=['set_order','encounterType'], ascending = [True, False])
+    
+    df2.drop(['set_order'], axis=1, inplace=True)
+    
+    return df2
 
 # In[circles_2]:
 #run this analysis for all guilds
@@ -1015,6 +1011,107 @@ circle_raid_log_cols = circle_raid_log.columns[5:]
 circle_raid_log[circle_raid_log_cols] = circle_raid_log[circle_raid_log_cols].apply(
     lambda c: pd.to_numeric(c, errors='coerce').round(0).astype('Int64')
 )
+
+
+
+# In[new_cell]:
+
+
+#produce json files with members lists for all 4 guilds to be used in homina
+#also add emoji with image of the leading character in each meta to the nickhame of the person for 
+
+#replace names of meta teams with emojis
+interim_frame = global_aggr_toplines
+interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("neuro", "<:Neurothrope:1409879307014246560>")
+interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("mech", "<:Exitor:1409879259538915379>")
+interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("multi", "<:Ragnar:1409879314840682578>")
+interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("custodes", "<:Kariyan:1409879281617866912>")
+
+interim_frame["combined_name_meta"] = interim_frame["max_archetype"] + " | " + interim_frame["user_nicknames"]
+
+#add encodings to member files
+interim_frame_us = us_members.merge(
+    interim_frame[["user_nicknames", "combined_name_meta"]],
+    how="left",
+    left_on="user_nicknames",
+    right_on="user_nicknames"
+)
+
+interim_frame_bi = bi_members.merge(
+    interim_frame[["user_nicknames", "combined_name_meta"]],
+    how="left",
+    left_on="user_nicknames",
+    right_on="user_nicknames"
+)
+
+interim_frame_ky = ky_members.merge(
+    interim_frame[["user_nicknames", "combined_name_meta"]],
+    how="left",
+    left_on="user_nicknames",
+    right_on="user_nicknames"
+)
+
+interim_frame_vn = vn_members.merge(
+    interim_frame[["user_nicknames", "combined_name_meta"]],
+    how="left",
+    left_on="user_nicknames",
+    right_on="user_nicknames"
+)
+
+#fill NAs - where ppl didn't hit legendaries, so they don't have encoding for meta
+interim_frame_us["combined_name_meta"] = interim_frame_us["combined_name_meta"].fillna(interim_frame_us["user_nicknames"])
+interim_frame_bi["combined_name_meta"] = interim_frame_bi["combined_name_meta"].fillna(interim_frame_bi["user_nicknames"])
+interim_frame_ky["combined_name_meta"] = interim_frame_ky["combined_name_meta"].fillna(interim_frame_ky["user_nicknames"])
+interim_frame_vn["combined_name_meta"] = interim_frame_vn["combined_name_meta"].fillna(interim_frame_vn["user_nicknames"])
+
+
+#create jsons
+data_us = interim_frame_us.set_index("userId")["combined_name_meta"].to_dict()
+data_bi = interim_frame_bi.set_index("userId")["combined_name_meta"].to_dict()
+data_ky = interim_frame_ky.set_index("userId")["combined_name_meta"].to_dict()
+data_vn = interim_frame_vn.set_index("userId")["combined_name_meta"].to_dict()
+
+with open("us_memberlist.json", "w", encoding="utf-8") as f:
+    json.dump(data_us, f, ensure_ascii=False, indent=2)
+
+with open("bi_memberlist.json", "w", encoding="utf-8") as f:
+    json.dump(data_bi, f, ensure_ascii=False, indent=2)
+
+with open("ky_memberlist.json", "w", encoding="utf-8") as f:
+    json.dump(data_ky, f, ensure_ascii=False, indent=2)
+
+with open("vn_memberlist.json", "w", encoding="utf-8") as f:
+    json.dump(data_vn, f, ensure_ascii=False, indent=2)
+
+#upload to dropbox
+# Upload the file
+with open("us_memberlist.json", "rb") as f:
+    dbx.files_upload(
+        f.read(), 
+        "/member_lists/us/memberlist.json", 
+        mode=dropbox.files.WriteMode.overwrite)
+
+with open("bi_memberlist.json", "rb") as f:
+    dbx.files_upload(
+        f.read(), 
+        "/member_lists/bi/memberlist.json", 
+        mode=dropbox.files.WriteMode.overwrite)
+
+with open("vn_memberlist.json", "rb") as f:
+    dbx.files_upload(
+        f.read(), 
+        "/member_lists/vn/memberlist.json", 
+        mode=dropbox.files.WriteMode.overwrite)
+
+with open("ky_memberlist.json", "rb") as f:
+    dbx.files_upload(
+        f.read(), 
+        "/member_lists/ky/memberlist.json", 
+        mode=dropbox.files.WriteMode.overwrite)
+
+print("member lists uploaded to dropbox")
+
+
 
 # In[125]:
 
@@ -1155,8 +1252,4 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
-
-
-
-
 
