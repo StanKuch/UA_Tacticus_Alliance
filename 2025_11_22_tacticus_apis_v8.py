@@ -1113,6 +1113,204 @@ print("member lists uploaded to dropbox")
 
 
 
+# In[players and units1]:
+
+#write a function to get players data programmatically
+def get_player_data(players_api):
+
+    url_player = 'https://api.tacticusgame.com/api/v1/player'
+    players_headers = {"accept": "application/json", "X-API-KEY": players_api}
+    r_player = requests.get(url_player, headers = players_headers)
+    
+    data_player = r_player.json()
+    data_units = data_player['player']['units']
+    units_df = pd.DataFrame(data_units, columns=[
+        'id', 
+        'name', 
+        'faction', 
+        'grandAlliance',
+        'progressionIndex',
+        'xp',
+        'xpLevel',
+        'rank',
+        'abilities',
+        'upgrades',
+        'items',
+        'shards',
+        'mythicShards'
+    ])
+    
+    #create dummy variables for abilities and items and MOWs
+    units_df['ability_1'] = None
+    units_df['ability_1_lvl'] = None
+    
+    units_df['ability_2'] = None
+    units_df['ability_2_lvl'] = None
+    
+    units_df['item_1_slot'] = None
+    units_df['item_1_name'] = None
+    units_df['item_1_level'] = None
+    units_df['item_1_rarity'] = None
+    
+    units_df['item_2_slot'] = None
+    units_df['item_2_name'] = None
+    units_df['item_2_level'] = None
+    units_df['item_2_rarity'] = None
+    
+    units_df['item_3_slot'] = None
+    units_df['item_3_name'] = None
+    units_df['item_3_level'] = None
+    units_df['item_3_rarity'] = None
+
+    #loop though abilities and items and split them into separate columns
+    for i in range(0,len(units_df)):
+        units_df.loc[i, 'ability_1'] = units_df.loc[i, 'abilities'][0]['id']
+        units_df.loc[i, 'ability_1_lvl'] = units_df.loc[i, 'abilities'][0]['level']
+        units_df.loc[i, 'ability_2'] = units_df.loc[i, 'abilities'][1]['id']
+        units_df.loc[i, 'ability_2_lvl'] = units_df.loc[i, 'abilities'][1]['level']
+    
+        try:
+            units_df.loc[i, 'item_1_slot'] = units_df.loc[i, 'items'][0]['slotId']
+        except:
+            units_df.loc[i, 'item_1_slot'] = np.nan
+    
+        try:
+            units_df.loc[i, 'item_1_name'] = units_df.loc[i, 'items'][0]['name']
+        except:
+            units_df.loc[i, 'item_1_name'] = np.nan
+
+        try:
+            units_df.loc[i, 'item_1_level'] = units_df.loc[i, 'items'][0]['level']
+        except:
+            units_df.loc[i, 'item_1_level'] = np.nan
+    
+        try:
+            units_df.loc[i, 'item_1_rarity'] = units_df.loc[i, 'items'][0]['rarity']
+        except:
+            units_df.loc[i, 'item_1_rarity'] = np.nan
+    
+    
+        try:
+            units_df.loc[i, 'item_2_slot'] = units_df.loc[i, 'items'][1]['slotId']
+        except:
+            units_df.loc[i, 'item_2_slot'] = np.nan
+    
+        try:
+            units_df.loc[i, 'item_2_name'] = units_df.loc[i, 'items'][1]['name']
+        except:
+            units_df.loc[i, 'item_2_name'] = np.nan
+
+        try:
+            units_df.loc[i, 'item_2_level'] = units_df.loc[i, 'items'][1]['level']
+        except:
+            units_df.loc[i, 'item_2_level'] = np.nan
+    
+        try:
+            units_df.loc[i, 'item_2_rarity'] = units_df.loc[i, 'items'][1]['rarity']
+        except:
+            units_df.loc[i, 'item_2_rarity'] = np.nan
+    
+            
+        try:
+            units_df.loc[i, 'item_3_slot'] = units_df.loc[i, 'items'][2]['slotId']
+        except:
+            units_df.loc[i, 'item_3_slot'] = np.nan
+    
+        try:
+            units_df.loc[i, 'item_3_name'] = units_df.loc[i, 'items'][2]['name']
+        except:
+            units_df.loc[i, 'item_3_name'] = np.nan
+    
+        try:
+            units_df.loc[i, 'item_3_level'] = units_df.loc[i, 'items'][2]['level']
+        except:
+            units_df.loc[i, 'item_3_level'] = np.nan
+    
+        try:
+            units_df.loc[i, 'item_3_rarity'] = units_df.loc[i, 'items'][2]['rarity']
+        except:
+            units_df.loc[i, 'item_3_rarity'] = np.nan
+    
+    final_df = units_df[[
+        'name',
+        'rank',
+        'xpLevel',
+        'progressionIndex',
+        'ability_1_lvl',
+        'ability_2_lvl'
+    ]]
+    
+    return final_df
+
+
+# In[players and units2]:
+
+#read data from dropbox with list of personal API keys
+dropbox_path_player_apis = "/api_keys/api_keys.xlsx"  # change to your path
+
+metadata_player_apis, res_player_apis = dbx.files_download(dropbox_path_player_apis)
+file_content_player_apis = res_player_apis.content
+df_player_apis = pd.read_excel(BytesIO(file_content_player_apis), engine='openpyxl')
+
+df_player_apis_populated = df_player_apis[df_player_apis["API_key"].notna()]
+
+
+
+# In[players and units3]:
+
+#loop through APIs and get player lists
+
+player_units_df = pd.DataFrame()
+
+for i in range(0,len(df_player_apis_populated)):
+    current_units = get_player_data(
+        #get api key from the table
+        df_player_apis_populated["API_key"].iloc[i]
+    ) 
+
+    current_units['player_nickname'] = df_player_apis_populated["user_nicknames"].iloc[i]
+    current_units['player_id'] = df_player_apis_populated["userId"].iloc[i]
+
+    #concat with dummy or prev df
+
+    player_units_df = pd.concat([player_units_df, current_units], axis=0)
+
+#add guild
+bi_members_marked = bi_members.copy()
+us_members_marked = us_members.copy()
+vn_members_marked = vn_members.copy()
+ky_members_marked = ky_members.copy()
+
+bi_members_marked['guild'] = '✙UKR✙Ukraine Blood & Iron'
+us_members_marked['guild'] = '✙UKR✙ Ukraine stands!'
+vn_members_marked['guild'] = '✙UKR✙VENENUM'
+ky_members_marked['guild'] = '✙UKR✙ Київ'
+
+all_members = pd.concat([bi_members_marked, us_members_marked, vn_members_marked, ky_members_marked], axis=0)
+
+player_units_df.rename(columns={'player_id': 'userId',
+                                'ability_1_lvl': 'active_lvl',
+                                'ability_2_lvl': 'passive_lvl',
+                                'progressionIndex': 'stars_rank',
+                                'rank': 'metal_rank',
+                                'name': 'unit_name'
+                               }, inplace=True)
+
+player_units_df = player_units_df.merge(all_members[['guild','userId']], on='userId', how='left')
+
+player_units_df_export = player_units_df[[
+    'guild',
+    'player_nickname',
+    'unit_name',
+    'xpLevel',
+    'stars_rank',
+    'metal_rank',
+    'active_lvl',
+    'passive_lvl'
+]]
+
+
+
 # In[125]:
 
 
@@ -1126,6 +1324,7 @@ with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
     circle_raid_log.to_excel(writer, sheet_name='Circles_log', index=True)
     global_boss_df.to_excel(writer, sheet_name='Global_boss_data', index=False)
     global_detailed_toplines.to_excel(writer, sheet_name='Global_detailed_toplines', index=False)
+    player_units_df_export.to_excel(writer, sheet_name='Units_log', index=False)
     export_full_logs.to_excel(writer, sheet_name='Full_logs', index=False)
 
 fixed_width = 20
@@ -1252,6 +1451,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
