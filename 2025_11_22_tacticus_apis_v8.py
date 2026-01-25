@@ -207,7 +207,7 @@ def get_guild_data(guild_api, global_member_list, raid_season_input):
     df_raid_log['Unit_5_power'] = None
     
     #loop though units and MOWs fields and split them into separate columns
-    for i in range(0,len(df_raid_log)-1):
+    for i in range(0,len(df_raid_log)):
         if df_raid_log.loc[i, 'damageType'] == "Bomb":
             continue
         elif df_raid_log.loc[i, 'damageType'] == "Battle":
@@ -1252,5 +1252,6 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
