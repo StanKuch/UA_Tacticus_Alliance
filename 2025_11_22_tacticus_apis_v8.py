@@ -1263,17 +1263,20 @@ df_player_apis_populated = df_player_apis[df_player_apis["API_key"].notna()]
 player_units_df = pd.DataFrame()
 
 for i in range(0,len(df_player_apis_populated)):
-    current_units = get_player_data(
-        #get api key from the table
-        df_player_apis_populated["API_key"].iloc[i]
-    ) 
-
-    current_units['player_nickname'] = df_player_apis_populated["user_nicknames"].iloc[i]
-    current_units['player_id'] = df_player_apis_populated["userId"].iloc[i]
-
-    #concat with dummy or prev df
-
-    player_units_df = pd.concat([player_units_df, current_units], axis=0)
+    try:
+        current_units = get_player_data(
+            #get api key from the table
+            df_player_apis_populated["API_key"].iloc[i]
+        ) 
+    
+        current_units['player_nickname'] = df_player_apis_populated["user_nicknames"].iloc[i]
+        current_units['player_id'] = df_player_apis_populated["userId"].iloc[i]
+    
+        #concat with dummy or prev df
+    
+        player_units_df = pd.concat([player_units_df, current_units], axis=0)
+    except:
+        continue
 
 #add guild
 bi_members_marked = bi_members.copy()
@@ -1451,6 +1454,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
