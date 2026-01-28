@@ -1001,10 +1001,14 @@ def get_circle_data(raid_log_df):
 #run this analysis for all guilds
 circle_raid_log = pd.DataFrame()
 
-circle_raid_log = pd.concat([circle_raid_log, get_circle_data(us_source_raid_log)], axis = 0)
-circle_raid_log = pd.concat([circle_raid_log, get_circle_data(bi_source_raid_log)], axis = 0)
-#circle_raid_log = pd.concat([circle_raid_log, get_circle_data(vn_source_raid_log)], axis = 0)
-circle_raid_log = pd.concat([circle_raid_log, get_circle_data(ky_source_raid_log)], axis = 0)
+if max(us_source_raid_log['tier']) >= 4: 
+    circle_raid_log = pd.concat([circle_raid_log, get_circle_data(us_source_raid_log)], axis = 0)
+if max(bi_source_raid_log['tier']) >= 4: 
+    circle_raid_log = pd.concat([circle_raid_log, get_circle_data(bi_source_raid_log)], axis = 0)
+if max(vn_source_raid_log['tier']) >= 4: 
+    circle_raid_log = pd.concat([circle_raid_log, get_circle_data(vn_source_raid_log)], axis = 0)
+if max(ky_source_raid_log['tier']) >= 4: 
+    circle_raid_log = pd.concat([circle_raid_log, get_circle_data(ky_source_raid_log)], axis = 0)
 
 #format the output
 circle_raid_log_cols = circle_raid_log.columns[5:]
@@ -1454,6 +1458,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
