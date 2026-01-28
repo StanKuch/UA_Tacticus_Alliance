@@ -1003,7 +1003,7 @@ circle_raid_log = pd.DataFrame()
 
 circle_raid_log = pd.concat([circle_raid_log, get_circle_data(us_source_raid_log)], axis = 0)
 circle_raid_log = pd.concat([circle_raid_log, get_circle_data(bi_source_raid_log)], axis = 0)
-circle_raid_log = pd.concat([circle_raid_log, get_circle_data(vn_source_raid_log)], axis = 0)
+#circle_raid_log = pd.concat([circle_raid_log, get_circle_data(vn_source_raid_log)], axis = 0)
 circle_raid_log = pd.concat([circle_raid_log, get_circle_data(ky_source_raid_log)], axis = 0)
 
 #format the output
@@ -1454,6 +1454,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
