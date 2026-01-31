@@ -177,6 +177,15 @@ def get_guild_data(guild_api, global_member_list, raid_season_input):
       'machineOfWarDetails',
       'globalConfigHash'
     ])
+
+    ############################# FIX FOR SARGE START
+    df_raid_log.drop(df_raid_log[
+                        (df_raid_log['userId'] == "c39cc5cf-d476-4055-9d00-a9ef68848727") & 
+                        (df_raid_log['damageDealt'] == 5241) &
+                        (df_raid_log['unitId'] == "GuildBoss5Boss1DeathMortarion")
+                        ].index
+                       )
+    ############################# FIX FOR SARGE END
     
     #join data from guild table
     df_raid_log = df_raid_log.merge(global_member_list, on='userId', how='left')
@@ -1458,6 +1467,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
