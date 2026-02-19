@@ -324,6 +324,14 @@ def get_guild_data(guild_api, global_member_list, raid_season_input):
     df_raid_log['legitimate_finishing_battle_flag'] = np.where((df_raid_log['finishing_battle_flag'] == 1) & 
                                                                (df_raid_log['damageDealt'] >= avg_bomb_damage_per_guild * finishing_multiplier),
                                                                1, 0)
+
+
+    #KOSTYL STARTS
+    df_raid_log.loc[    
+    (df_raid_log["user_nicknames"] == 'Proskill') & 
+    (df_raid_log["damageDealt"] == 6745) &
+    (df_raid_log["unitId"] == 'GuildBoss7Boss1AstraRogaldorn'), "legitimate_finishing_battle_flag"] = 1
+    #KOSTYL ENDS
             
     #aggregated raid data on player level
     aggregated_raid_data = (
@@ -1468,6 +1476,7 @@ with open(local_file, "rb") as f:
         mode=dropbox.files.WriteMode.overwrite)
 
 print(f"File uploaded to Dropbox at: {dropbox_path}")
+
 
 
 
