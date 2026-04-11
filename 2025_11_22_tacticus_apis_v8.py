@@ -747,13 +747,16 @@ global_detailed_toplines = global_aggr_raid_log[[
 
 global_detailed_toplines = global_detailed_toplines.sort_values(by='total_points',ascending=False)
 
+#add 0.5 total points for each battle before legendary
+global_detailed_toplines['total_points_updated'] = global_detailed_toplines['total_points'] + 0.5*(global_detailed_toplines['num_battles'] - global_detailed_toplines['num_battles_legendary'])
+
 global_aggr_toplines = global_detailed_toplines[[
     "guild",
     "user_nicknames",
     'user_level',
     'max_archetype',
     "num_battles",
-    "total_points"
+    "total_points_updated"
 ]]
 
 global_aggr_toplines['raid_season'] = raid_season
@@ -765,7 +768,7 @@ global_aggr_toplines = global_aggr_toplines[[
     'user_level',
     'max_archetype',
     "num_battles",
-    "total_points"
+    "total_points_updated"
 ]]
 
 #remove redundant columns
@@ -901,10 +904,10 @@ total_scored_df = global_aggr_toplines[[
     "guild",
     "user_nicknames",
     "num_battles",
-    "total_points"
+    "total_points_updated"
 ]].rename(columns={
     "num_battles": "overall_battles",
-    "total_points": "overall_points"
+    "total_points_updated": "overall_points"
 })
 
 boss_wise_points = boss_wise_points.merge(total_scored_df, on=['guild','user_nicknames'], how='left')
