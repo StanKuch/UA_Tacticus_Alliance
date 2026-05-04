@@ -748,7 +748,7 @@ global_detailed_toplines = global_aggr_raid_log[[
 #add 0.5 total points for each battle before legendary
 global_detailed_toplines['total_points_updated'] = global_detailed_toplines['total_points'] + 0.5*(global_detailed_toplines['num_battles'] - global_detailed_toplines['num_battles_legendary'])
 
-global_detailed_toplines = global_detailed_toplines.sort_values(by='total_points',ascending=False)
+global_detailed_toplines = global_detailed_toplines.sort_values(by='total_points_updated',ascending=False)
 
 global_aggr_toplines = global_detailed_toplines[[
     "guild",
