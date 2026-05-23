@@ -686,6 +686,19 @@ global_boss_df_playerwise_efficiency = global_boss_df.loc[
 
 global_boss_df = global_boss_df.merge(global_boss_df_playerwise_efficiency, on=['guild', 'user_nicknames'], how='left')
 
+
+################## UPDATE - add 20% boost to efficiencis for primes
+multiplier = 1.2
+global_boss_df['global_efficiency'] = np.where(global_boss_df["unit_name"].str.contains("SideBoss", na=False).astype(int) == 1,
+                                            global_boss_df['global_efficiency'] * multiplier,
+                                            global_boss_df['global_efficiency'])
+
+global_boss_df['benchmark_avg_efficiency_plug'] = np.where(global_boss_df["unit_name"].str.contains("SideBoss", na=False).astype(int) == 1,
+                                            global_boss_df['benchmark_avg_efficiency_plug'] * multiplier,
+                                            global_boss_df['benchmark_avg_efficiency_plug'])
+################## END OF UPDATE
+
+
 global_boss_df['global_points'] = np.where((global_boss_df['num_battles'] > 0) & (global_boss_df['num_finish_battles'] > 0),
                                     global_boss_df['global_efficiency'] * (global_boss_df['num_battles'] + global_boss_df['num_finish_battles']),
                                   np.where((global_boss_df['num_battles'] > 0) & (global_boss_df['num_finish_battles'] == 0),
