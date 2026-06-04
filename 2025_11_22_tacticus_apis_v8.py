@@ -688,7 +688,7 @@ global_boss_df = global_boss_df.merge(global_boss_df_playerwise_efficiency, on=[
 
 
 ################## UPDATE - add 20% boost to efficiencis for primes
-multiplier = 1.2
+multiplier = 1.1
 global_boss_df['global_efficiency'] = np.where(global_boss_df["unit_name"].str.contains("SideBoss", na=False).astype(int) == 1,
                                             global_boss_df['global_efficiency'] * multiplier,
                                             global_boss_df['global_efficiency'])
