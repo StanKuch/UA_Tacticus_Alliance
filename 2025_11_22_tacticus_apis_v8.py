@@ -79,7 +79,7 @@ global_member_list = pd.read_excel(BytesIO(file_content), engine='openpyxl')
 # In[109]:
 
 #test_for_bugs
-print("test1)
+print("test1")
 
 
 url_guild = 'https://api.tacticusgame.com/api/v1/guild'
