@@ -680,13 +680,6 @@ benchmark_total_boss_df = benchmark_total_boss_df.groupby(['unit_name']).apply(l
 # In[118]:
 
 
-try:
-    print("test_here1")
-except Exception:
-    print("test_failed1")
-
-
-
 #calculate efficiency for individual bosses for everybody
 global_boss_df = global_boss_df.merge(benchmark_total_boss_df[['unit_name','benchmark_max_avg_damage']], on='unit_name', how='left')
 
@@ -718,14 +711,6 @@ global_boss_df['benchmark_avg_efficiency_plug'] = np.where(global_boss_df["unit_
                                             global_boss_df['benchmark_avg_efficiency_plug'] * multiplier,
                                             global_boss_df['benchmark_avg_efficiency_plug'])
 ################## END OF UPDATE
-
-
-try:
-    print("test_here2")
-except Exception:
-    print("test_failed2")
-
-
 
 global_boss_df['global_points'] = np.where((global_boss_df['num_battles'] > 0) & (global_boss_df['num_finish_battles'] > 0),
                                     global_boss_df['global_efficiency'] * (global_boss_df['num_battles'] + global_boss_df['num_finish_battles']),
@@ -768,13 +753,17 @@ pivot_global_boss_df.reset_index(inplace=True)
 pivot_global_boss_df = pivot_global_boss_df.fillna(0)
 pivot_global_boss_df = pivot_global_boss_df.round(3)
 
-aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild_and_name'], how='left')
-
-
 try:
     print("test_here4")
 except Exception:
     print("test_failed4")
+
+aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild_and_name'], how='left')
+
+try:
+    print("test_here5")
+except Exception:
+    print("test_failed5")
 
 
 #create topline version of global export
