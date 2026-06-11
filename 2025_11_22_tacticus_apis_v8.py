@@ -680,6 +680,16 @@ benchmark_total_boss_df = benchmark_total_boss_df.groupby(['unit_name']).apply(l
 # In[118]:
 
 
+try:
+    print("test_here")
+except Exception:
+    print("test_failed")
+
+
+
+
+
+
 #calculate efficiency for individual bosses for everybody
 global_boss_df = global_boss_df.merge(benchmark_total_boss_df[['unit_name','benchmark_max_avg_damage']], on='unit_name', how='left')
 
