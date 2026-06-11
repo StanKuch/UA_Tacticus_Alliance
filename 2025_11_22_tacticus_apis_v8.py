@@ -740,23 +740,8 @@ aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_glob
 
 # In[120]:
 
-try:
-    print(lu_aggr_raid_log)
-except Exception:
-    print("test_failed3")
-
-
 #calculate total points per boss, merge with aggr_global_boss_df
 pivot_global_boss_df = global_boss_df.pivot(index='guild_and_name', columns='unit_name', values=['global_points'])
-
-try:
-    print("test_here4")
-except Exception:
-    print("test_failed4")
-
-
-
-
 pivot_global_boss_df.columns = ['_'.join(str(s).strip() for s in col if s) for col in pivot_global_boss_df.columns]
 pivot_global_boss_df.reset_index(inplace=True)
 pivot_global_boss_df = pivot_global_boss_df.fillna(0)
@@ -764,10 +749,6 @@ pivot_global_boss_df = pivot_global_boss_df.round(3)
 
 aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild_and_name'], how='left')
 
-try:
-    print("test_here5")
-except Exception:
-    print("test_failed5")
 
 
 #create topline version of global export
