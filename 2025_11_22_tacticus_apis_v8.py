@@ -681,12 +681,9 @@ benchmark_total_boss_df = benchmark_total_boss_df.groupby(['unit_name']).apply(l
 
 
 try:
-    print("test_here")
+    print("test_here1")
 except Exception:
-    print("test_failed")
-
-
-
+    print("test_failed1")
 
 
 
@@ -723,6 +720,13 @@ global_boss_df['benchmark_avg_efficiency_plug'] = np.where(global_boss_df["unit_
 ################## END OF UPDATE
 
 
+try:
+    print("test_here2")
+except Exception:
+    print("test_failed2")
+
+
+
 global_boss_df['global_points'] = np.where((global_boss_df['num_battles'] > 0) & (global_boss_df['num_finish_battles'] > 0),
                                     global_boss_df['global_efficiency'] * (global_boss_df['num_battles'] + global_boss_df['num_finish_battles']),
                                   np.where((global_boss_df['num_battles'] > 0) & (global_boss_df['num_finish_battles'] == 0),
@@ -749,6 +753,11 @@ aggr_global_boss_df = aggr_global_boss_df.sort_values(by='total_points',ascendin
 aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_global_boss_df['user_nicknames']
 
 
+try:
+    print("test_here3")
+except Exception:
+    print("test_failed3")
+
 # In[120]:
 
 
@@ -760,6 +769,13 @@ pivot_global_boss_df = pivot_global_boss_df.fillna(0)
 pivot_global_boss_df = pivot_global_boss_df.round(3)
 
 aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild_and_name'], how='left')
+
+
+try:
+    print("test_here4")
+except Exception:
+    print("test_failed4")
+
 
 #create topline version of global export
 global_detailed_toplines = global_aggr_raid_log[[
