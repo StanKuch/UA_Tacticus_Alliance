@@ -738,16 +738,22 @@ aggr_global_boss_df = aggr_global_boss_df.sort_values(by='total_points',ascendin
 aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_global_boss_df['user_nicknames']
 
 
-try:
-    print("test_here3")
-except Exception:
-    print("test_failed3")
-
 # In[120]:
 
 
 #calculate total points per boss, merge with aggr_global_boss_df
 pivot_global_boss_df = global_boss_df.pivot(index='guild_and_name', columns='unit_name', values=['global_points'])
+
+
+try:
+    print("test_here3")
+except Exception:
+    print("test_failed3")
+
+
+
+
+
 pivot_global_boss_df.columns = ['_'.join(str(s).strip() for s in col if s) for col in pivot_global_boss_df.columns]
 pivot_global_boss_df.reset_index(inplace=True)
 pivot_global_boss_df = pivot_global_boss_df.fillna(0)
