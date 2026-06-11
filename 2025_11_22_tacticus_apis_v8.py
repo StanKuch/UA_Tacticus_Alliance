@@ -741,7 +741,7 @@ aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_glob
 # In[120]:
 
 try:
-    print("test_here3")
+    print(global_boss_df)
 except Exception:
     print("test_failed3")
 
