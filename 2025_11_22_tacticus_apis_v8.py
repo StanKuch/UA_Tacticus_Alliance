@@ -78,9 +78,6 @@ global_member_list = pd.read_excel(BytesIO(file_content), engine='openpyxl')
 
 # In[109]:
 
-#test_for_bugs
-print("test1")
-
 
 url_guild = 'https://api.tacticusgame.com/api/v1/guild'
 url_raid_generic = 'https://api.tacticusgame.com/api/v1/guildRaid'
@@ -639,6 +636,7 @@ processed_aggr_logs = [
     vn_aggr_raid_log, 
     ky_aggr_raid_log,
     lu_aggr_raid_log
+]
 
 #merge dfs in case they were properly generated, or skip them in case of error
 for df_order in range(0,len(processed_logs)):
