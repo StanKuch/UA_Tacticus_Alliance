@@ -741,7 +741,7 @@ aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_glob
 # In[120]:
 
 try:
-    print(global_boss_df[global_boss_df["guild"] == "Легіон Україна"])
+    print(lu_aggr_raid_log)
 except Exception:
     print("test_failed3")
 
