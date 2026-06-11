@@ -54,7 +54,8 @@ global_member_list = pd.concat([
     bi_members[['userId','user_nicknames']],
     us_members[['userId','user_nicknames']],
     vn_members[['userId','user_nicknames']],
-    ky_members[['userId','user_nicknames']]
+    ky_members[['userId','user_nicknames']],
+    lu_members[['userId','user_nicknames']]
     ], 
     axis=0, ignore_index=True)
 
@@ -76,6 +77,9 @@ global_member_list = pd.read_excel(BytesIO(file_content), engine='openpyxl')
 
 
 # In[109]:
+
+#test_for_bugs
+print("test1)
 
 
 url_guild = 'https://api.tacticusgame.com/api/v1/guild'
