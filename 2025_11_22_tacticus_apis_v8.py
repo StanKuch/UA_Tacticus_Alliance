@@ -619,7 +619,7 @@ processed_logs = [
     us_source_raid_log,
     vn_source_raid_log,
     ky_source_raid_log,
-    lu_source_raid_log,
+    lu_source_raid_log
 ]
 
 processed_boss_logs = [
