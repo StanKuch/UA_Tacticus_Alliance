@@ -553,25 +553,25 @@ def get_guild_data(guild_api, global_member_list, raid_season_input):
 bi_members = pd.DataFrame()
 us_members = pd.DataFrame()
 vn_members = pd.DataFrame()
-ky_members = pd.DataFrame()
+#ky_members = pd.DataFrame()
 lu_members = pd.DataFrame()
 
 bi_source_raid_log = pd.DataFrame()
 us_source_raid_log = pd.DataFrame()
 vn_source_raid_log = pd.DataFrame()
-ky_source_raid_log = pd.DataFrame()
+#ky_source_raid_log = pd.DataFrame()
 lu_source_raid_log = pd.DataFrame()
 
 bi_boss_df = pd.DataFrame()
 us_boss_df = pd.DataFrame()
 vn_boss_df = pd.DataFrame()
-ky_boss_df = pd.DataFrame()
+#ky_boss_df = pd.DataFrame()
 lu_boss_df = pd.DataFrame()
 
 us_aggr_raid_log = pd.DataFrame() 
 bi_aggr_raid_log = pd.DataFrame()
 vn_aggr_raid_log = pd.DataFrame()
-ky_aggr_raid_log = pd.DataFrame()
+#ky_aggr_raid_log = pd.DataFrame()
 lu_aggr_raid_log = pd.DataFrame()
 
 #run the function to pull and format data
@@ -593,11 +593,11 @@ try:
 except Exception:
     print("vn_error")
     
-try:
-    ky_members, ky_source_raid_log, ky_aggr_raid_log, ky_boss_df = get_guild_data(api_ky, global_member_list, raid_season)
-    print("ky_done")
-except Exception:
-    print("ky_error")
+#try:
+#    ky_members, ky_source_raid_log, ky_aggr_raid_log, ky_boss_df = get_guild_data(api_ky, global_member_list, raid_season)
+#    print("ky_done")
+#except Exception:
+#    print("ky_error")
 
 try:
     lu_members, lu_source_raid_log, lu_aggr_raid_log, lu_boss_df = get_guild_data(api_lu, global_member_list, raid_season)
@@ -618,7 +618,7 @@ processed_logs = [
     bi_source_raid_log, 
     us_source_raid_log,
     vn_source_raid_log,
-    ky_source_raid_log,
+    #ky_source_raid_log,
     lu_source_raid_log
 ]
 
@@ -626,7 +626,7 @@ processed_boss_logs = [
     bi_boss_df,
     us_boss_df,
     vn_boss_df,
-    ky_boss_df,
+    #ky_boss_df,
     lu_boss_df
 ]
 
@@ -634,7 +634,7 @@ processed_aggr_logs = [
     us_aggr_raid_log, 
     bi_aggr_raid_log, 
     vn_aggr_raid_log, 
-    ky_aggr_raid_log,
+    #ky_aggr_raid_log,
     lu_aggr_raid_log
 ]
 
@@ -1098,12 +1098,12 @@ interim_frame_bi = bi_members.merge(
     right_on="user_nicknames"
 )
 
-interim_frame_ky = ky_members.merge(
-    interim_frame[["user_nicknames", "combined_name_meta"]],
-    how="left",
-    left_on="user_nicknames",
-    right_on="user_nicknames"
-)
+#interim_frame_ky = ky_members.merge(
+#    interim_frame[["user_nicknames", "combined_name_meta"]],
+#    how="left",
+#    left_on="user_nicknames",
+#    right_on="user_nicknames"
+#)
 
 interim_frame_vn = vn_members.merge(
     interim_frame[["user_nicknames", "combined_name_meta"]],
@@ -1123,7 +1123,7 @@ interim_frame_lu = lu_members.merge(
 #fill NAs - where ppl didn't hit legendaries, so they don't have encoding for meta
 interim_frame_us["combined_name_meta"] = interim_frame_us["combined_name_meta"].fillna(interim_frame_us["user_nicknames"])
 interim_frame_bi["combined_name_meta"] = interim_frame_bi["combined_name_meta"].fillna(interim_frame_bi["user_nicknames"])
-interim_frame_ky["combined_name_meta"] = interim_frame_ky["combined_name_meta"].fillna(interim_frame_ky["user_nicknames"])
+#interim_frame_ky["combined_name_meta"] = interim_frame_ky["combined_name_meta"].fillna(interim_frame_ky["user_nicknames"])
 interim_frame_vn["combined_name_meta"] = interim_frame_vn["combined_name_meta"].fillna(interim_frame_vn["user_nicknames"])
 interim_frame_lu["combined_name_meta"] = interim_frame_lu["combined_name_meta"].fillna(interim_frame_lu["user_nicknames"])
 
@@ -1131,7 +1131,7 @@ interim_frame_lu["combined_name_meta"] = interim_frame_lu["combined_name_meta"].
 #create jsons
 data_us = interim_frame_us.set_index("userId")["combined_name_meta"].to_dict()
 data_bi = interim_frame_bi.set_index("userId")["combined_name_meta"].to_dict()
-data_ky = interim_frame_ky.set_index("userId")["combined_name_meta"].to_dict()
+#data_ky = interim_frame_ky.set_index("userId")["combined_name_meta"].to_dict()
 data_vn = interim_frame_vn.set_index("userId")["combined_name_meta"].to_dict()
 data_lu = interim_frame_lu.set_index("userId")["combined_name_meta"].to_dict()
 
@@ -1141,8 +1141,8 @@ with open("us_memberlist.json", "w", encoding="utf-8") as f:
 with open("bi_memberlist.json", "w", encoding="utf-8") as f:
     json.dump(data_bi, f, ensure_ascii=False, indent=2)
 
-with open("ky_memberlist.json", "w", encoding="utf-8") as f:
-    json.dump(data_ky, f, ensure_ascii=False, indent=2)
+#with open("ky_memberlist.json", "w", encoding="utf-8") as f:
+#    json.dump(data_ky, f, ensure_ascii=False, indent=2)
 
 with open("vn_memberlist.json", "w", encoding="utf-8") as f:
     json.dump(data_vn, f, ensure_ascii=False, indent=2)
@@ -1170,11 +1170,11 @@ with open("vn_memberlist.json", "rb") as f:
         "/member_lists/vn/memberlist.json", 
         mode=dropbox.files.WriteMode.overwrite)
 
-with open("ky_memberlist.json", "rb") as f:
-    dbx.files_upload(
-        f.read(), 
-        "/member_lists/ky/memberlist.json", 
-        mode=dropbox.files.WriteMode.overwrite)
+#with open("ky_memberlist.json", "rb") as f:
+#    dbx.files_upload(
+#        f.read(), 
+#        "/member_lists/ky/memberlist.json", 
+#        mode=dropbox.files.WriteMode.overwrite)
 
 with open("lu_memberlist.json", "rb") as f:
     dbx.files_upload(
@@ -1355,13 +1355,13 @@ for i in range(0,len(df_player_apis_populated)):
 bi_members_marked = bi_members.copy()
 us_members_marked = us_members.copy()
 vn_members_marked = vn_members.copy()
-ky_members_marked = ky_members.copy()
+#ky_members_marked = ky_members.copy()
 lu_members_marked = lu_members.copy()
 
 bi_members_marked['guild'] = '✙UKR✙Ukraine Blood & Iron'
 us_members_marked['guild'] = '✙UKR✙ Ukraine stands!'
 vn_members_marked['guild'] = '✙UKR✙VENENUM'
-ky_members_marked['guild'] = '✙UKR✙ Київ'
+#ky_members_marked['guild'] = '✙UKR✙ Київ'
 lu_members_marked['guild'] = 'Легіон Україна'
 
 all_members = pd.concat([bi_members_marked, us_members_marked, vn_members_marked, ky_members_marked, lu_members_marked], axis=0)
