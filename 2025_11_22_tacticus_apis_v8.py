@@ -1070,6 +1070,9 @@ circle_raid_log[circle_raid_log_cols] = circle_raid_log[circle_raid_log_cols].ap
 
 # In[new_cell]:
 
+#debugging
+print("test1")
+
 
 #produce json files with members lists for all 4 guilds to be used in homina
 #also add emoji with image of the leading character in each meta to the nickhame of the person for 
@@ -1184,7 +1187,8 @@ with open("lu_memberlist.json", "rb") as f:
 
 print("member lists uploaded to dropbox")
 
-
+#debugging
+print("test2")
 
 # In[players and units1]:
 
