@@ -810,31 +810,31 @@ global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 bi_members_s0, bi_source_raid_log_s0, bi_aggr_raid_log_s0, bi_boss_df_s0 = get_guild_data(api_bi, global_member_list, raid_season)
 us_members_s0, us_source_raid_log_s0, us_aggr_raid_log_s0, us_boss_df_s0 = get_guild_data(api_us, global_member_list, raid_season)
 vn_members_s0, vn_source_raid_log_s0, vn_aggr_raid_log_s0, vn_boss_df_s0 = get_guild_data(api_vn, global_member_list, raid_season)
-ky_members_s0, ky_source_raid_log_s0, ky_aggr_raid_log_s0, ky_boss_df_s0 = get_guild_data(api_ky, global_member_list, raid_season)
+#ky_members_s0, ky_source_raid_log_s0, ky_aggr_raid_log_s0, ky_boss_df_s0 = get_guild_data(api_ky, global_member_list, raid_season)
 lu_members_s0, lu_source_raid_log_s0, lu_aggr_raid_log_s0, lu_boss_df_s0 = get_guild_data(api_lu, global_member_list, raid_season)
 
 bi_members_s1, bi_source_raid_log_s1, bi_aggr_raid_log_s1, bi_boss_df_s1 = get_guild_data(api_bi, global_member_list, raid_season-1)
 us_members_s1, us_source_raid_log_s1, us_aggr_raid_log_s1, us_boss_df_s1 = get_guild_data(api_us, global_member_list, raid_season-1)
 vn_members_s1, vn_source_raid_log_s1, vn_aggr_raid_log_s1, vn_boss_df_s1 = get_guild_data(api_vn, global_member_list, raid_season-1)
-ky_members_s1, ky_source_raid_log_s1, ky_aggr_raid_log_s1, ky_boss_df_s1 = get_guild_data(api_ky, global_member_list, raid_season-1)
+#ky_members_s1, ky_source_raid_log_s1, ky_aggr_raid_log_s1, ky_boss_df_s1 = get_guild_data(api_ky, global_member_list, raid_season-1)
 lu_members_s1, lu_source_raid_log_s1, lu_aggr_raid_log_s1, lu_boss_df_s1 = get_guild_data(api_lu, global_member_list, raid_season-1)
 
 bi_members_s2, bi_source_raid_log_s2, bi_aggr_raid_log_s2, bi_boss_df_s2 = get_guild_data(api_bi, global_member_list, raid_season-2)
 us_members_s2, us_source_raid_log_s2, us_aggr_raid_log_s2, us_boss_df_s2 = get_guild_data(api_us, global_member_list, raid_season-2)
 vn_members_s2, vn_source_raid_log_s2, vn_aggr_raid_log_s2, vn_boss_df_s2 = get_guild_data(api_vn, global_member_list, raid_season-2)
-ky_members_s2, ky_source_raid_log_s2, ky_aggr_raid_log_s2, ky_boss_df_s2 = get_guild_data(api_ky, global_member_list, raid_season-2)
+#ky_members_s2, ky_source_raid_log_s2, ky_aggr_raid_log_s2, ky_boss_df_s2 = get_guild_data(api_ky, global_member_list, raid_season-2)
 lu_members_s2, lu_source_raid_log_s2, lu_aggr_raid_log_s2, lu_boss_df_s2 = get_guild_data(api_lu, global_member_list, raid_season-2)
 
 bi_members_s3, bi_source_raid_log_s3, bi_aggr_raid_log_s3, bi_boss_df_s3 = get_guild_data(api_bi, global_member_list, raid_season-3)
 us_members_s3, us_source_raid_log_s3, us_aggr_raid_log_s3, us_boss_df_s3 = get_guild_data(api_us, global_member_list, raid_season-3)
 vn_members_s3, vn_source_raid_log_s3, vn_aggr_raid_log_s3, vn_boss_df_s3 = get_guild_data(api_vn, global_member_list, raid_season-3)
-ky_members_s3, ky_source_raid_log_s3, ky_aggr_raid_log_s3, ky_boss_df_s3 = get_guild_data(api_ky, global_member_list, raid_season-3)
+#ky_members_s3, ky_source_raid_log_s3, ky_aggr_raid_log_s3, ky_boss_df_s3 = get_guild_data(api_ky, global_member_list, raid_season-3)
 lu_members_s3, lu_source_raid_log_s3, lu_aggr_raid_log_s3, lu_boss_df_s3 = get_guild_data(api_lu, global_member_list, raid_season-3)
 
 bi_members_s4, bi_source_raid_log_s4, bi_aggr_raid_log_s4, bi_boss_df_s4 = get_guild_data(api_bi, global_member_list, raid_season-4)
 us_members_s4, us_source_raid_log_s4, us_aggr_raid_log_s4, us_boss_df_s4 = get_guild_data(api_us, global_member_list, raid_season-4)
 vn_members_s4, vn_source_raid_log_s4, vn_aggr_raid_log_s4, vn_boss_df_s4 = get_guild_data(api_vn, global_member_list, raid_season-4)
-ky_members_s4, ky_source_raid_log_s4, ky_aggr_raid_log_s4, ky_boss_df_s4 = get_guild_data(api_ky, global_member_list, raid_season-4)
+#ky_members_s4, ky_source_raid_log_s4, ky_aggr_raid_log_s4, ky_boss_df_s4 = get_guild_data(api_ky, global_member_list, raid_season-4)
 lu_members_s4, lu_source_raid_log_s4, lu_aggr_raid_log_s4, lu_boss_df_s4 = get_guild_data(api_lu, global_member_list, raid_season-4)
 
 
@@ -843,31 +843,31 @@ concat_raid_log = pd.concat([
     bi_source_raid_log_s0, 
     us_source_raid_log_s0,
     vn_source_raid_log_s0,
-    ky_source_raid_log_s0,
+    #ky_source_raid_log_s0,
     lu_source_raid_log_s0,
     
     bi_source_raid_log_s1, 
     us_source_raid_log_s1,
     vn_source_raid_log_s1,
-    ky_source_raid_log_s1,
+    #ky_source_raid_log_s1,
     lu_source_raid_log_s1,
 
     bi_source_raid_log_s2, 
     us_source_raid_log_s2,
     vn_source_raid_log_s2,
-    ky_source_raid_log_s2,
+    #ky_source_raid_log_s2,
     lu_source_raid_log_s2,
 
     bi_source_raid_log_s3, 
     us_source_raid_log_s3,
     vn_source_raid_log_s3,
-    ky_source_raid_log_s3,
+    #ky_source_raid_log_s3,
     lu_source_raid_log_s3,
 
     bi_source_raid_log_s4, 
     us_source_raid_log_s4,
     vn_source_raid_log_s4,
-    ky_source_raid_log_s4,
+    #ky_source_raid_log_s4,
     lu_source_raid_log_s4
 ], axis=0, ignore_index=True)
 
@@ -1055,8 +1055,8 @@ if max(bi_source_raid_log['tier']) >= 4:
     circle_raid_log = pd.concat([circle_raid_log, get_circle_data(bi_source_raid_log)], axis = 0)
 if max(vn_source_raid_log['tier']) >= 4: 
     circle_raid_log = pd.concat([circle_raid_log, get_circle_data(vn_source_raid_log)], axis = 0)
-if max(ky_source_raid_log['tier']) >= 4: 
-    circle_raid_log = pd.concat([circle_raid_log, get_circle_data(ky_source_raid_log)], axis = 0)
+#if max(ky_source_raid_log['tier']) >= 4: 
+#    circle_raid_log = pd.concat([circle_raid_log, get_circle_data(ky_source_raid_log)], axis = 0)
 if max(lu_source_raid_log['tier']) >= 4: 
     circle_raid_log = pd.concat([circle_raid_log, get_circle_data(lu_source_raid_log)], axis = 0)
 
