@@ -41,6 +41,7 @@ api_us = os.environ["api_us"]
 api_vn = os.environ["api_vn"]
 api_ky = os.environ["api_ky"]
 api_lu = os.environ["api_lu"]
+api_su = os.environ["api_su"]
 dropbox_path = os.environ["dropbox_path"]
 
 
@@ -555,24 +556,28 @@ us_members = pd.DataFrame()
 vn_members = pd.DataFrame()
 ky_members = pd.DataFrame()
 lu_members = pd.DataFrame()
+su_members = pd.DataFrame()
 
 bi_source_raid_log = pd.DataFrame()
 us_source_raid_log = pd.DataFrame()
 vn_source_raid_log = pd.DataFrame()
 ky_source_raid_log = pd.DataFrame()
 lu_source_raid_log = pd.DataFrame()
+su_source_raid_log = pd.DataFrame()
 
 bi_boss_df = pd.DataFrame()
 us_boss_df = pd.DataFrame()
 vn_boss_df = pd.DataFrame()
 ky_boss_df = pd.DataFrame()
 lu_boss_df = pd.DataFrame()
+su_boss_df = pd.DataFrame()
 
 us_aggr_raid_log = pd.DataFrame() 
 bi_aggr_raid_log = pd.DataFrame()
 vn_aggr_raid_log = pd.DataFrame()
 ky_aggr_raid_log = pd.DataFrame()
 lu_aggr_raid_log = pd.DataFrame()
+su_aggr_raid_log = pd.DataFrame()
 
 #run the function to pull and format data
 try:
@@ -605,6 +610,12 @@ try:
 except Exception:
     print("lu_error")
 
+try:
+    su_members, su_source_raid_log, su_aggr_raid_log, su_boss_df = get_guild_data(api_su, global_member_list, raid_season)
+    print("su_done")
+except Exception:
+    print("su_error")
+
 
 # In[115]:
 
@@ -619,7 +630,8 @@ processed_logs = [
     us_source_raid_log,
     vn_source_raid_log,
     ky_source_raid_log,
-    lu_source_raid_log
+    lu_source_raid_log,
+    su_source_raid_log
 ]
 
 processed_boss_logs = [
@@ -627,7 +639,8 @@ processed_boss_logs = [
     us_boss_df,
     vn_boss_df,
     ky_boss_df,
-    lu_boss_df
+    lu_boss_df,
+    su_boss_df
 ]
 
 processed_aggr_logs = [
@@ -635,7 +648,8 @@ processed_aggr_logs = [
     bi_aggr_raid_log, 
     vn_aggr_raid_log, 
     ky_aggr_raid_log,
-    lu_aggr_raid_log
+    lu_aggr_raid_log,
+    su_aggr_raid_log
 ]
 
 #merge dfs in case they were properly generated, or skip them in case of error
@@ -812,30 +826,35 @@ us_members_s0, us_source_raid_log_s0, us_aggr_raid_log_s0, us_boss_df_s0 = get_g
 vn_members_s0, vn_source_raid_log_s0, vn_aggr_raid_log_s0, vn_boss_df_s0 = get_guild_data(api_vn, global_member_list, raid_season)
 ky_members_s0, ky_source_raid_log_s0, ky_aggr_raid_log_s0, ky_boss_df_s0 = get_guild_data(api_ky, global_member_list, raid_season)
 lu_members_s0, lu_source_raid_log_s0, lu_aggr_raid_log_s0, lu_boss_df_s0 = get_guild_data(api_lu, global_member_list, raid_season)
+su_members_s0, su_source_raid_log_s0, su_aggr_raid_log_s0, su_boss_df_s0 = get_guild_data(api_su, global_member_list, raid_season)
 
 bi_members_s1, bi_source_raid_log_s1, bi_aggr_raid_log_s1, bi_boss_df_s1 = get_guild_data(api_bi, global_member_list, raid_season-1)
 us_members_s1, us_source_raid_log_s1, us_aggr_raid_log_s1, us_boss_df_s1 = get_guild_data(api_us, global_member_list, raid_season-1)
 vn_members_s1, vn_source_raid_log_s1, vn_aggr_raid_log_s1, vn_boss_df_s1 = get_guild_data(api_vn, global_member_list, raid_season-1)
 ky_members_s1, ky_source_raid_log_s1, ky_aggr_raid_log_s1, ky_boss_df_s1 = get_guild_data(api_ky, global_member_list, raid_season-1)
 lu_members_s1, lu_source_raid_log_s1, lu_aggr_raid_log_s1, lu_boss_df_s1 = get_guild_data(api_lu, global_member_list, raid_season-1)
+su_members_s1, su_source_raid_log_s1, su_aggr_raid_log_s1, su_boss_df_s1 = get_guild_data(api_su, global_member_list, raid_season-1)
 
 bi_members_s2, bi_source_raid_log_s2, bi_aggr_raid_log_s2, bi_boss_df_s2 = get_guild_data(api_bi, global_member_list, raid_season-2)
 us_members_s2, us_source_raid_log_s2, us_aggr_raid_log_s2, us_boss_df_s2 = get_guild_data(api_us, global_member_list, raid_season-2)
 vn_members_s2, vn_source_raid_log_s2, vn_aggr_raid_log_s2, vn_boss_df_s2 = get_guild_data(api_vn, global_member_list, raid_season-2)
 ky_members_s2, ky_source_raid_log_s2, ky_aggr_raid_log_s2, ky_boss_df_s2 = get_guild_data(api_ky, global_member_list, raid_season-2)
 lu_members_s2, lu_source_raid_log_s2, lu_aggr_raid_log_s2, lu_boss_df_s2 = get_guild_data(api_lu, global_member_list, raid_season-2)
+su_members_s2, su_source_raid_log_s2, su_aggr_raid_log_s2, su_boss_df_s2 = get_guild_data(api_su, global_member_list, raid_season-2)
 
 bi_members_s3, bi_source_raid_log_s3, bi_aggr_raid_log_s3, bi_boss_df_s3 = get_guild_data(api_bi, global_member_list, raid_season-3)
 us_members_s3, us_source_raid_log_s3, us_aggr_raid_log_s3, us_boss_df_s3 = get_guild_data(api_us, global_member_list, raid_season-3)
 vn_members_s3, vn_source_raid_log_s3, vn_aggr_raid_log_s3, vn_boss_df_s3 = get_guild_data(api_vn, global_member_list, raid_season-3)
 ky_members_s3, ky_source_raid_log_s3, ky_aggr_raid_log_s3, ky_boss_df_s3 = get_guild_data(api_ky, global_member_list, raid_season-3)
 lu_members_s3, lu_source_raid_log_s3, lu_aggr_raid_log_s3, lu_boss_df_s3 = get_guild_data(api_lu, global_member_list, raid_season-3)
+su_members_s3, su_source_raid_log_s3, su_aggr_raid_log_s3, su_boss_df_s3 = get_guild_data(api_su, global_member_list, raid_season-3)
 
 bi_members_s4, bi_source_raid_log_s4, bi_aggr_raid_log_s4, bi_boss_df_s4 = get_guild_data(api_bi, global_member_list, raid_season-4)
 us_members_s4, us_source_raid_log_s4, us_aggr_raid_log_s4, us_boss_df_s4 = get_guild_data(api_us, global_member_list, raid_season-4)
 vn_members_s4, vn_source_raid_log_s4, vn_aggr_raid_log_s4, vn_boss_df_s4 = get_guild_data(api_vn, global_member_list, raid_season-4)
 ky_members_s4, ky_source_raid_log_s4, ky_aggr_raid_log_s4, ky_boss_df_s4 = get_guild_data(api_ky, global_member_list, raid_season-4)
 lu_members_s4, lu_source_raid_log_s4, lu_aggr_raid_log_s4, lu_boss_df_s4 = get_guild_data(api_lu, global_member_list, raid_season-4)
+su_members_s4, su_source_raid_log_s4, su_aggr_raid_log_s4, su_boss_df_s4 = get_guild_data(api_su, global_member_list, raid_season-4)
 
 
 # concat dataframes across guilds for last 5 seasons
@@ -845,30 +864,35 @@ concat_raid_log = pd.concat([
     vn_source_raid_log_s0,
     ky_source_raid_log_s0,
     lu_source_raid_log_s0,
+    su_source_raid_log_s0,
     
     bi_source_raid_log_s1, 
     us_source_raid_log_s1,
     vn_source_raid_log_s1,
     ky_source_raid_log_s1,
     lu_source_raid_log_s1,
+    su_source_raid_log_s1,
 
     bi_source_raid_log_s2, 
     us_source_raid_log_s2,
     vn_source_raid_log_s2,
     ky_source_raid_log_s2,
     lu_source_raid_log_s2,
+    su_source_raid_log_s2,
 
     bi_source_raid_log_s3, 
     us_source_raid_log_s3,
     vn_source_raid_log_s3,
     ky_source_raid_log_s3,
     lu_source_raid_log_s3,
+    su_source_raid_log_s3,
 
     bi_source_raid_log_s4, 
     us_source_raid_log_s4,
     vn_source_raid_log_s4,
     ky_source_raid_log_s4,
-    lu_source_raid_log_s4
+    lu_source_raid_log_s4,
+    su_source_raid_log_s4
 ], axis=0, ignore_index=True)
 
 # find max damage per meta team
@@ -1067,124 +1091,6 @@ circle_raid_log[circle_raid_log_cols] = circle_raid_log[circle_raid_log_cols].ap
 )
 
 
-
-# In[new_cell]:
-
-
-#produce json files with members lists for all 4 guilds to be used in homina
-#also add emoji with image of the leading character in each meta to the nickhame of the person for 
-
-#replace names of meta teams with emojis
-interim_frame = global_aggr_toplines.copy()
-interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("neuro", "<:Neurothrope:1409879307014246560>")
-interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("mech", "<:Exitor:1409879259538915379>")
-interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("multi", "<:Ragnar:1409879314840682578>")
-interim_frame["max_archetype"] = interim_frame["max_archetype"].replace("custodes", "<:Kariyan:1409879281617866912>")
-
-interim_frame["combined_name_meta"] = interim_frame["max_archetype"] + " | " + interim_frame["user_nicknames"]
-
-#add encodings to member files
-interim_frame_us = us_members.merge(
-    interim_frame[["user_nicknames", "combined_name_meta"]],
-    how="left",
-    left_on="user_nicknames",
-    right_on="user_nicknames"
-)
-
-interim_frame_bi = bi_members.merge(
-    interim_frame[["user_nicknames", "combined_name_meta"]],
-    how="left",
-    left_on="user_nicknames",
-    right_on="user_nicknames"
-)
-
-interim_frame_ky = ky_members.merge(
-    interim_frame[["user_nicknames", "combined_name_meta"]],
-    how="left",
-    left_on="user_nicknames",
-    right_on="user_nicknames"
-)
-
-interim_frame_vn = vn_members.merge(
-    interim_frame[["user_nicknames", "combined_name_meta"]],
-    how="left",
-    left_on="user_nicknames",
-    right_on="user_nicknames"
-)
-
-interim_frame_lu = lu_members.merge(
-    interim_frame[["user_nicknames", "combined_name_meta"]],
-    how="left",
-    left_on="user_nicknames",
-    right_on="user_nicknames"
-)
-
-
-#fill NAs - where ppl didn't hit legendaries, so they don't have encoding for meta
-interim_frame_us["combined_name_meta"] = interim_frame_us["combined_name_meta"].fillna(interim_frame_us["user_nicknames"])
-interim_frame_bi["combined_name_meta"] = interim_frame_bi["combined_name_meta"].fillna(interim_frame_bi["user_nicknames"])
-interim_frame_ky["combined_name_meta"] = interim_frame_ky["combined_name_meta"].fillna(interim_frame_ky["user_nicknames"])
-interim_frame_vn["combined_name_meta"] = interim_frame_vn["combined_name_meta"].fillna(interim_frame_vn["user_nicknames"])
-interim_frame_lu["combined_name_meta"] = interim_frame_lu["combined_name_meta"].fillna(interim_frame_lu["user_nicknames"])
-
-
-#create jsons
-data_us = interim_frame_us.set_index("userId")["combined_name_meta"].to_dict()
-data_bi = interim_frame_bi.set_index("userId")["combined_name_meta"].to_dict()
-data_ky = interim_frame_ky.set_index("userId")["combined_name_meta"].to_dict()
-data_vn = interim_frame_vn.set_index("userId")["combined_name_meta"].to_dict()
-data_lu = interim_frame_lu.set_index("userId")["combined_name_meta"].to_dict()
-
-with open("us_memberlist.json", "w", encoding="utf-8") as f:
-    json.dump(data_us, f, ensure_ascii=False, indent=2)
-
-with open("bi_memberlist.json", "w", encoding="utf-8") as f:
-    json.dump(data_bi, f, ensure_ascii=False, indent=2)
-
-with open("ky_memberlist.json", "w", encoding="utf-8") as f:
-    json.dump(data_ky, f, ensure_ascii=False, indent=2)
-
-with open("vn_memberlist.json", "w", encoding="utf-8") as f:
-    json.dump(data_vn, f, ensure_ascii=False, indent=2)
-
-with open("lu_memberlist.json", "w", encoding="utf-8") as f:
-    json.dump(data_lu, f, ensure_ascii=False, indent=2)
-
-#upload to dropbox
-# Upload the file
-with open("us_memberlist.json", "rb") as f:
-    dbx.files_upload(
-        f.read(), 
-        "/member_lists/us/memberlist.json", 
-        mode=dropbox.files.WriteMode.overwrite)
-
-with open("bi_memberlist.json", "rb") as f:
-    dbx.files_upload(
-        f.read(), 
-        "/member_lists/bi/memberlist.json", 
-        mode=dropbox.files.WriteMode.overwrite)
-
-with open("vn_memberlist.json", "rb") as f:
-    dbx.files_upload(
-        f.read(), 
-        "/member_lists/vn/memberlist.json", 
-        mode=dropbox.files.WriteMode.overwrite)
-
-with open("ky_memberlist.json", "rb") as f:
-    dbx.files_upload(
-        f.read(), 
-        "/member_lists/ky/memberlist.json", 
-        mode=dropbox.files.WriteMode.overwrite)
-
-with open("lu_memberlist.json", "rb") as f:
-    dbx.files_upload(
-        f.read(), 
-        "/member_lists/lu/memberlist.json", 
-        mode=dropbox.files.WriteMode.overwrite)
-
-print("member lists uploaded to dropbox")
-
-
 # In[players and units1]:
 
 #write a function to get players data programmatically
@@ -1356,14 +1262,16 @@ us_members_marked = us_members.copy()
 vn_members_marked = vn_members.copy()
 ky_members_marked = ky_members.copy()
 lu_members_marked = lu_members.copy()
+su_members_marked = lu_members.copy()
 
 bi_members_marked['guild'] = '✙UKR✙Ukraine Blood & Iron'
 us_members_marked['guild'] = '✙UKR✙ Ukraine stands!'
 vn_members_marked['guild'] = '✙UKR✙VENENUM'
 ky_members_marked['guild'] = '✙UKR✙ Київ'
 lu_members_marked['guild'] = 'Легіон Україна'
+su_members_marked['guild'] = 'Слава Україні'
 
-all_members = pd.concat([bi_members_marked, us_members_marked, vn_members_marked, ky_members_marked, lu_members_marked], axis=0)
+all_members = pd.concat([bi_members_marked, us_members_marked, vn_members_marked, ky_members_marked, lu_members_marked, su_members_marked], axis=0)
 
 player_units_df.rename(columns={'player_id': 'userId',
                                 'ability_1_lvl': 'active_lvl',
