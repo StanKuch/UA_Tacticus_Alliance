@@ -30,6 +30,7 @@ jobs:
           api_vn: ${{ secrets.api_vn }}
           api_ky: ${{ secrets.api_ky }}
           api_lu: ${{ secrets.api_lu }}
+          api_su: ${{ secrets.api_su }}
           dropbox_path: ${{ secrets.dropbox_path }}
           APP_KEY: ${{ secrets.APP_KEY }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
