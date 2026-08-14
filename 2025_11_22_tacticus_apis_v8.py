@@ -628,9 +628,6 @@ except Exception:
     print("ustorm_error")
 
 
-
-print("test1")
-
 # In[115]:
 
 
@@ -712,6 +709,8 @@ benchmark_total_boss_df = benchmark_total_boss_df.groupby(['unit_name']).apply(l
 
 # In[118]:
 
+print("test3")
+
 
 #calculate efficiency for individual bosses for everybody
 global_boss_df = global_boss_df.merge(benchmark_total_boss_df[['unit_name','benchmark_max_avg_damage']], on='unit_name', how='left')
@@ -733,6 +732,8 @@ global_boss_df_playerwise_efficiency = global_boss_df.loc[
 
 global_boss_df = global_boss_df.merge(global_boss_df_playerwise_efficiency, on=['guild', 'user_nicknames'], how='left')
 
+
+print("test4")
 
 ################## UPDATE - add 20% boost to efficiencis for primes
 multiplier = 1.1
@@ -782,6 +783,7 @@ pivot_global_boss_df = pivot_global_boss_df.round(3)
 
 aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild_and_name'], how='left')
 
+print("test5")
 
 
 #create topline version of global export
@@ -837,6 +839,7 @@ global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 ######################## create new dataframe, with damage toplines for all bosses across meta teams
 
+print("test6")
 # In[new cell 1]:
 
 # get data for last 5 seasons
@@ -970,7 +973,7 @@ meta_boss_df = meta_boss_df[[
     "max_custodes_damage"
 ]]
 
-print("test3")
+print("test7")
 
 
 # In[new_cell_4]:
