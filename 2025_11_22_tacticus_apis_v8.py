@@ -1288,7 +1288,7 @@ vn_members_marked = vn_members.copy()
 ky_members_marked = ky_members.copy()
 lu_members_marked = lu_members.copy()
 su_members_marked = su_members.copy()
-ustorm_members_marked = su_members.copy()
+ustorm_members_marked = ustorm_members.copy()
 
 bi_members_marked['guild'] = '✙UKR✙Ukraine Blood & Iron'
 us_members_marked['guild'] = '✙UKR✙ Ukraine stands!'
