@@ -628,6 +628,9 @@ except Exception:
     print("ustorm_error")
 
 
+
+print("test1")
+
 # In[115]:
 
 
@@ -672,6 +675,8 @@ for df_order in range(0,len(processed_logs)):
     global_boss_df = pd.concat([global_boss_df, processed_boss_logs[df_order]], axis=0, ignore_index=True)
     global_aggr_raid_log = pd.concat([global_aggr_raid_log, processed_aggr_logs[df_order]], axis=0, ignore_index=True)
 
+
+print("test2")
 
 # In[123]:
 
@@ -964,6 +969,8 @@ meta_boss_df = meta_boss_df[[
     "max_neuro_damage",
     "max_custodes_damage"
 ]]
+
+print("test3")
 
 
 # In[new_cell_4]:
