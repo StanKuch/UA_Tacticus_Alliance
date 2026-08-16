@@ -766,7 +766,7 @@ aggr_global_boss_df = aggr_global_boss_df.sort_values(by='total_points',ascendin
 
 aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_global_boss_df['user_nicknames']
 
-
+print('test1')
 # In[120]:
 
 #calculate total points per boss, merge with aggr_global_boss_df
@@ -831,7 +831,7 @@ global_detailed_toplines = global_detailed_toplines.drop('guild_and_name', axis=
 global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 ######################## create new dataframe, with damage toplines for all bosses across meta teams
-
+print('test2')
 # In[new cell 1]:
 
 # get data for last 5 seasons
@@ -875,7 +875,7 @@ lu_members_s4, lu_source_raid_log_s4, lu_aggr_raid_log_s4, lu_boss_df_s4 = get_g
 su_members_s4, su_source_raid_log_s4, su_aggr_raid_log_s4, su_boss_df_s4 = get_guild_data(api_su, global_member_list, raid_season-4)
 ustorm_members_s4, ustorm_source_raid_log_s4, ustorm_aggr_raid_log_s4, ustorm_boss_df_s4 = get_guild_data(api_ustorm, global_member_list, raid_season-4)
 
-
+print('test3')
 
 # concat dataframes across guilds for last 5 seasons
 concat_raid_log = pd.concat([    
