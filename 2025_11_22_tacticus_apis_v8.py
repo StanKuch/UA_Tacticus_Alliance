@@ -673,8 +673,6 @@ for df_order in range(0,len(processed_logs)):
     global_aggr_raid_log = pd.concat([global_aggr_raid_log, processed_aggr_logs[df_order]], axis=0, ignore_index=True)
 
 
-print("test2")
-
 # In[123]:
 
 
@@ -708,8 +706,6 @@ benchmark_total_boss_df = benchmark_total_boss_df.groupby(['unit_name']).apply(l
 
 
 # In[118]:
-
-print("test3")
 
 
 #calculate efficiency for individual bosses for everybody
@@ -759,6 +755,8 @@ global_boss_df = global_boss_df.round(3)
 global_boss_df['guild_and_name'] = global_boss_df['guild'] + global_boss_df['user_nicknames']
 
 
+print("test5")
+
 # In[119]:
 
 
@@ -772,6 +770,7 @@ aggr_global_boss_df = aggr_global_boss_df.sort_values(by='total_points',ascendin
 aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_global_boss_df['user_nicknames']
 
 
+print("test6")
 # In[120]:
 
 #calculate total points per boss, merge with aggr_global_boss_df
@@ -783,7 +782,7 @@ pivot_global_boss_df = pivot_global_boss_df.round(3)
 
 aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild_and_name'], how='left')
 
-print("test5")
+print("test7")
 
 
 #create topline version of global export
@@ -839,7 +838,6 @@ global_boss_df = global_boss_df.drop('guild_and_name', axis=1)
 
 ######################## create new dataframe, with damage toplines for all bosses across meta teams
 
-print("test6")
 # In[new cell 1]:
 
 # get data for last 5 seasons
@@ -972,9 +970,6 @@ meta_boss_df = meta_boss_df[[
     "max_neuro_damage",
     "max_custodes_damage"
 ]]
-
-print("test7")
-
 
 # In[new_cell_4]:
 
