@@ -767,13 +767,6 @@ aggr_global_boss_df = aggr_global_boss_df.sort_values(by='total_points',ascendin
 aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_global_boss_df['user_nicknames']
 
 
-print("test6")
-pd.set_option('display.max_rows', 800)
-print(global_boss_df)
-print(su_aggr_raid_log)
-print(ustorm_aggr_raid_log)
-
-
 # In[120]:
 
 #calculate total points per boss, merge with aggr_global_boss_df
@@ -784,8 +777,6 @@ pivot_global_boss_df = pivot_global_boss_df.fillna(0)
 pivot_global_boss_df = pivot_global_boss_df.round(3)
 
 aggr_global_boss_df = aggr_global_boss_df.merge(pivot_global_boss_df, on=['guild_and_name'], how='left')
-
-print("test7")
 
 
 #create topline version of global export
