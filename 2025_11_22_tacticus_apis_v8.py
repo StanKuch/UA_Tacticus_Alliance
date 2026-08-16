@@ -770,6 +770,10 @@ aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_glob
 print("test6")
 pd.set_option('display.max_rows', 800)
 print(global_boss_df)
+print(su_aggr_raid_log)
+print(ustorm_aggr_raid_log)
+
+
 # In[120]:
 
 #calculate total points per boss, merge with aggr_global_boss_df
