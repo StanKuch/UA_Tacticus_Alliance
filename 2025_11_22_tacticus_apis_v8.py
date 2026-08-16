@@ -729,8 +729,6 @@ global_boss_df_playerwise_efficiency = global_boss_df.loc[
 global_boss_df = global_boss_df.merge(global_boss_df_playerwise_efficiency, on=['guild', 'user_nicknames'], how='left')
 
 
-print("test4")
-
 ################## UPDATE - add 20% boost to efficiencis for primes
 multiplier = 1.1
 global_boss_df['global_efficiency'] = np.where(global_boss_df["unit_name"].str.contains("SideBoss", na=False).astype(int) == 1,
@@ -755,7 +753,6 @@ global_boss_df = global_boss_df.round(3)
 global_boss_df['guild_and_name'] = global_boss_df['guild'] + global_boss_df['user_nicknames']
 
 
-print("test5")
 
 # In[119]:
 
@@ -771,6 +768,8 @@ aggr_global_boss_df['guild_and_name'] = aggr_global_boss_df['guild'] + aggr_glob
 
 
 print("test6")
+
+print(global_boss_df)
 # In[120]:
 
 #calculate total points per boss, merge with aggr_global_boss_df
