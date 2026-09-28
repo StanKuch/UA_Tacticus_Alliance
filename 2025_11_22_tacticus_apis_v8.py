@@ -42,7 +42,7 @@ api_vn = os.environ["api_vn"]
 api_ky = os.environ["api_ky"]
 api_lu = os.environ["api_lu"]
 api_su = os.environ["api_su"]
-api_ustorm = os.environ["api_ustorm"]
+#api_ustorm = os.environ["api_ustorm"]
 dropbox_path = os.environ["dropbox_path"]
 
 
@@ -558,7 +558,7 @@ vn_members = pd.DataFrame()
 ky_members = pd.DataFrame()
 lu_members = pd.DataFrame()
 su_members = pd.DataFrame()
-ustorm_members = pd.DataFrame()
+#ustorm_members = pd.DataFrame()
 
 bi_source_raid_log = pd.DataFrame()
 us_source_raid_log = pd.DataFrame()
@@ -566,7 +566,7 @@ vn_source_raid_log = pd.DataFrame()
 ky_source_raid_log = pd.DataFrame()
 lu_source_raid_log = pd.DataFrame()
 su_source_raid_log = pd.DataFrame()
-ustorm_source_raid_log = pd.DataFrame()
+#ustorm_source_raid_log = pd.DataFrame()
 
 bi_boss_df = pd.DataFrame()
 us_boss_df = pd.DataFrame()
@@ -574,7 +574,7 @@ vn_boss_df = pd.DataFrame()
 ky_boss_df = pd.DataFrame()
 lu_boss_df = pd.DataFrame()
 su_boss_df = pd.DataFrame()
-ustorm_boss_df = pd.DataFrame()
+#ustorm_boss_df = pd.DataFrame()
 
 us_aggr_raid_log = pd.DataFrame() 
 bi_aggr_raid_log = pd.DataFrame()
@@ -582,7 +582,7 @@ vn_aggr_raid_log = pd.DataFrame()
 ky_aggr_raid_log = pd.DataFrame()
 lu_aggr_raid_log = pd.DataFrame()
 su_aggr_raid_log = pd.DataFrame()
-ustorm_aggr_raid_log = pd.DataFrame()
+#ustorm_aggr_raid_log = pd.DataFrame()
 
 #run the function to pull and format data
 try:
@@ -621,11 +621,11 @@ try:
 except Exception:
     print("su_error")
 
-try:
-    ustorm_members, ustorm_source_raid_log, ustorm_aggr_raid_log, ustorm_boss_df = get_guild_data(api_ustorm, global_member_list, raid_season)
-    print("ustorm_done")
-except Exception:
-    print("ustorm_error")
+#try:
+#    ustorm_members, ustorm_source_raid_log, ustorm_aggr_raid_log, ustorm_boss_df = get_guild_data(api_ustorm, global_member_list, raid_season)
+#    print("ustorm_done")
+#except Exception:
+#    print("ustorm_error")
 
 
 # In[115]:
@@ -642,8 +642,8 @@ processed_logs = [
     vn_source_raid_log,
     ky_source_raid_log,
     lu_source_raid_log,
-    su_source_raid_log,
-    ustorm_source_raid_log
+    su_source_raid_log#,
+    #ustorm_source_raid_log
 ]
 
 processed_boss_logs = [
@@ -652,8 +652,8 @@ processed_boss_logs = [
     vn_boss_df,
     ky_boss_df,
     lu_boss_df,
-    su_boss_df,
-    ustorm_boss_df
+    su_boss_df#,
+    #ustorm_boss_df
 ]
 
 processed_aggr_logs = [
@@ -662,8 +662,8 @@ processed_aggr_logs = [
     vn_aggr_raid_log, 
     ky_aggr_raid_log,
     lu_aggr_raid_log,
-    su_aggr_raid_log,
-    ustorm_aggr_raid_log
+    su_aggr_raid_log#,
+    #ustorm_aggr_raid_log
 ]
 
 #merge dfs in case they were properly generated, or skip them in case of error
@@ -841,7 +841,7 @@ vn_members_s0, vn_source_raid_log_s0, vn_aggr_raid_log_s0, vn_boss_df_s0 = get_g
 ky_members_s0, ky_source_raid_log_s0, ky_aggr_raid_log_s0, ky_boss_df_s0 = get_guild_data(api_ky, global_member_list, raid_season)
 lu_members_s0, lu_source_raid_log_s0, lu_aggr_raid_log_s0, lu_boss_df_s0 = get_guild_data(api_lu, global_member_list, raid_season)
 su_members_s0, su_source_raid_log_s0, su_aggr_raid_log_s0, su_boss_df_s0 = get_guild_data(api_su, global_member_list, raid_season)
-ustorm_members_s0, ustorm_source_raid_log_s0, ustorm_aggr_raid_log_s0, ustorm_boss_df_s0 = get_guild_data(api_ustorm, global_member_list, raid_season)
+#ustorm_members_s0, ustorm_source_raid_log_s0, ustorm_aggr_raid_log_s0, ustorm_boss_df_s0 = get_guild_data(api_ustorm, global_member_list, raid_season)
 
 bi_members_s1, bi_source_raid_log_s1, bi_aggr_raid_log_s1, bi_boss_df_s1 = get_guild_data(api_bi, global_member_list, raid_season-1)
 us_members_s1, us_source_raid_log_s1, us_aggr_raid_log_s1, us_boss_df_s1 = get_guild_data(api_us, global_member_list, raid_season-1)
@@ -849,7 +849,7 @@ vn_members_s1, vn_source_raid_log_s1, vn_aggr_raid_log_s1, vn_boss_df_s1 = get_g
 ky_members_s1, ky_source_raid_log_s1, ky_aggr_raid_log_s1, ky_boss_df_s1 = get_guild_data(api_ky, global_member_list, raid_season-1)
 lu_members_s1, lu_source_raid_log_s1, lu_aggr_raid_log_s1, lu_boss_df_s1 = get_guild_data(api_lu, global_member_list, raid_season-1)
 su_members_s1, su_source_raid_log_s1, su_aggr_raid_log_s1, su_boss_df_s1 = get_guild_data(api_su, global_member_list, raid_season-1)
-ustorm_members_s1, ustorm_source_raid_log_s1, ustorm_aggr_raid_log_s1, ustorm_boss_df_s1 = get_guild_data(api_ustorm, global_member_list, raid_season-1)
+#ustorm_members_s1, ustorm_source_raid_log_s1, ustorm_aggr_raid_log_s1, ustorm_boss_df_s1 = get_guild_data(api_ustorm, global_member_list, raid_season-1)
 
 bi_members_s2, bi_source_raid_log_s2, bi_aggr_raid_log_s2, bi_boss_df_s2 = get_guild_data(api_bi, global_member_list, raid_season-2)
 us_members_s2, us_source_raid_log_s2, us_aggr_raid_log_s2, us_boss_df_s2 = get_guild_data(api_us, global_member_list, raid_season-2)
@@ -857,7 +857,7 @@ vn_members_s2, vn_source_raid_log_s2, vn_aggr_raid_log_s2, vn_boss_df_s2 = get_g
 ky_members_s2, ky_source_raid_log_s2, ky_aggr_raid_log_s2, ky_boss_df_s2 = get_guild_data(api_ky, global_member_list, raid_season-2)
 lu_members_s2, lu_source_raid_log_s2, lu_aggr_raid_log_s2, lu_boss_df_s2 = get_guild_data(api_lu, global_member_list, raid_season-2)
 su_members_s2, su_source_raid_log_s2, su_aggr_raid_log_s2, su_boss_df_s2 = get_guild_data(api_su, global_member_list, raid_season-2)
-ustorm_members_s2, ustorm_source_raid_log_s2, ustorm_aggr_raid_log_s2, ustorm_boss_df_s2 = get_guild_data(api_ustorm, global_member_list, raid_season-2)
+#ustorm_members_s2, ustorm_source_raid_log_s2, ustorm_aggr_raid_log_s2, ustorm_boss_df_s2 = get_guild_data(api_ustorm, global_member_list, raid_season-2)
 
 bi_members_s3, bi_source_raid_log_s3, bi_aggr_raid_log_s3, bi_boss_df_s3 = get_guild_data(api_bi, global_member_list, raid_season-3)
 us_members_s3, us_source_raid_log_s3, us_aggr_raid_log_s3, us_boss_df_s3 = get_guild_data(api_us, global_member_list, raid_season-3)
@@ -865,7 +865,7 @@ vn_members_s3, vn_source_raid_log_s3, vn_aggr_raid_log_s3, vn_boss_df_s3 = get_g
 ky_members_s3, ky_source_raid_log_s3, ky_aggr_raid_log_s3, ky_boss_df_s3 = get_guild_data(api_ky, global_member_list, raid_season-3)
 lu_members_s3, lu_source_raid_log_s3, lu_aggr_raid_log_s3, lu_boss_df_s3 = get_guild_data(api_lu, global_member_list, raid_season-3)
 su_members_s3, su_source_raid_log_s3, su_aggr_raid_log_s3, su_boss_df_s3 = get_guild_data(api_su, global_member_list, raid_season-3)
-ustorm_members_s3, ustorm_source_raid_log_s3, ustorm_aggr_raid_log_s3, ustorm_boss_df_s3 = get_guild_data(api_ustorm, global_member_list, raid_season-3)
+#ustorm_members_s3, ustorm_source_raid_log_s3, ustorm_aggr_raid_log_s3, ustorm_boss_df_s3 = get_guild_data(api_ustorm, global_member_list, raid_season-3)
 
 bi_members_s4, bi_source_raid_log_s4, bi_aggr_raid_log_s4, bi_boss_df_s4 = get_guild_data(api_bi, global_member_list, raid_season-4)
 us_members_s4, us_source_raid_log_s4, us_aggr_raid_log_s4, us_boss_df_s4 = get_guild_data(api_us, global_member_list, raid_season-4)
@@ -873,7 +873,7 @@ vn_members_s4, vn_source_raid_log_s4, vn_aggr_raid_log_s4, vn_boss_df_s4 = get_g
 ky_members_s4, ky_source_raid_log_s4, ky_aggr_raid_log_s4, ky_boss_df_s4 = get_guild_data(api_ky, global_member_list, raid_season-4)
 lu_members_s4, lu_source_raid_log_s4, lu_aggr_raid_log_s4, lu_boss_df_s4 = get_guild_data(api_lu, global_member_list, raid_season-4)
 su_members_s4, su_source_raid_log_s4, su_aggr_raid_log_s4, su_boss_df_s4 = get_guild_data(api_su, global_member_list, raid_season-4)
-ustorm_members_s4, ustorm_source_raid_log_s4, ustorm_aggr_raid_log_s4, ustorm_boss_df_s4 = get_guild_data(api_ustorm, global_member_list, raid_season-4)
+#ustorm_members_s4, ustorm_source_raid_log_s4, ustorm_aggr_raid_log_s4, ustorm_boss_df_s4 = get_guild_data(api_ustorm, global_member_list, raid_season-4)
 
 print('test3')
 
@@ -885,7 +885,7 @@ concat_raid_log = pd.concat([
     ky_source_raid_log_s0,
     lu_source_raid_log_s0,
     su_source_raid_log_s0,
-    ustorm_source_raid_log_s0,
+    #ustorm_source_raid_log_s0,
     
     bi_source_raid_log_s1, 
     us_source_raid_log_s1,
@@ -893,7 +893,7 @@ concat_raid_log = pd.concat([
     ky_source_raid_log_s1,
     lu_source_raid_log_s1,
     su_source_raid_log_s1,
-    ustorm_source_raid_log_s1,
+    #ustorm_source_raid_log_s1,
 
     bi_source_raid_log_s2, 
     us_source_raid_log_s2,
@@ -901,7 +901,7 @@ concat_raid_log = pd.concat([
     ky_source_raid_log_s2,
     lu_source_raid_log_s2,
     su_source_raid_log_s2,
-    ustorm_source_raid_log_s2,
+    #ustorm_source_raid_log_s2,
 
     bi_source_raid_log_s3, 
     us_source_raid_log_s3,
@@ -909,15 +909,15 @@ concat_raid_log = pd.concat([
     ky_source_raid_log_s3,
     lu_source_raid_log_s3,
     su_source_raid_log_s3,
-    ustorm_source_raid_log_s3,
+    #ustorm_source_raid_log_s3,
 
     bi_source_raid_log_s4, 
     us_source_raid_log_s4,
     vn_source_raid_log_s4,
     ky_source_raid_log_s4,
     lu_source_raid_log_s4,
-    su_source_raid_log_s4,
-    ustorm_source_raid_log_s4
+    su_source_raid_log_s4#,
+    #ustorm_source_raid_log_s4
 ], axis=0, ignore_index=True)
 
 # find max damage per meta team
@@ -1287,7 +1287,7 @@ vn_members_marked = vn_members.copy()
 ky_members_marked = ky_members.copy()
 lu_members_marked = lu_members.copy()
 su_members_marked = su_members.copy()
-ustorm_members_marked = ustorm_members.copy()
+#ustorm_members_marked = ustorm_members.copy()
 
 bi_members_marked['guild'] = '✙UKR✙Ukraine Blood & Iron'
 us_members_marked['guild'] = '✙UKR✙ Ukraine stands!'
@@ -1295,9 +1295,9 @@ vn_members_marked['guild'] = '✙UKR✙VENENUM'
 ky_members_marked['guild'] = '✙UKR✙ Київ'
 lu_members_marked['guild'] = 'Легіон Україна'
 su_members_marked['guild'] = 'Слава Україні'
-ustorm_members_marked['guild'] = 'Ukrainian Stormbringers'
+#ustorm_members_marked['guild'] = 'Ukrainian Stormbringers'
 
-all_members = pd.concat([bi_members_marked, us_members_marked, vn_members_marked, ky_members_marked, lu_members_marked, su_members_marked, ustorm_members_marked], axis=0)
+all_members = pd.concat([bi_members_marked, us_members_marked, vn_members_marked, ky_members_marked, lu_members_marked, su_members_marked], axis=0)
 
 player_units_df.rename(columns={'player_id': 'userId',
                                 'ability_1_lvl': 'active_lvl',
